@@ -1,5 +1,5 @@
 .barberpoleBg {
-  --calculated-height: calc(sqrt((pow(25, 2) / 2)) * 2px);
+  --cycle-height: calc(sqrt((pow(25, 2) / 2)) * 2px);
 
   background: repeating-linear-gradient(
     135deg,
@@ -9,10 +9,10 @@
     #111 25px
   );
   animation: 2s linear 0s infinite barberpoleAnimation;
-  
+
   @keyframes barberpoleAnimation {
     from {
-      background-position-y: calc(var(--calculated-height) * -1);
+      background-position-y: calc(var(--cycle-height) * -1);
     }
 
     to {
@@ -33,8 +33,8 @@
     background: linear-gradient(
       to top,
       rgba(0, 0, 0, 1) 0px,
-      rgba(0, 0, 0, 1) var(--calculated-height),
-      rgba(0, 0, 0, 0) calc(var(--calculated-height) + 50px)
+      rgba(0, 0, 0, 1) var(--cycle-height),
+      rgba(0, 0, 0, 0) calc(var(--cycle-height) + 50px)
     );
   }
 }
