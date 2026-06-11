@@ -22,6 +22,7 @@ export default function Home() {
 
   const [capoFret, setCapoFret] = useState<number>(0);
   const [maxFret, setMaxFret] = useState<number>(15);
+  const [minFret, setMinFret] = useState<number>(0);
 
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files![0];
@@ -116,6 +117,34 @@ export default function Home() {
                 />
               </div>
             </label>
+            <div className="flex gap-4">
+              {/* Min Fret */}
+              <label htmlFor="minFret" className="max-w-30">
+                Min Fret
+                <div id="minFret" className="mt-2">
+                  <InputWithPlusMinusButtons
+                    name="minFret"
+                    value={minFret}
+                    onChange={setMinFret}
+                    minValue={capoFret}
+                    maxValue={maxFret}
+                  />
+                </div>
+              </label>
+              {/* Max Fret */}
+              <label htmlFor="maxFret" className="max-w-30">
+                Max Fret
+                <div id="maxFret" className="mt-2">
+                  <InputWithPlusMinusButtons
+                    name="maxFret"
+                    value={maxFret}
+                    onChange={setMaxFret}
+                    minValue={minFret}
+                    maxValue={24}
+                  />
+                </div>
+              </label>
+            </div>
           </div>
         </form>
       </div>
