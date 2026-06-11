@@ -2,6 +2,7 @@
 
 import { tunings } from "@/app/lib/tunings";
 import styles from "@/app/styles/barberpole-bg.module.scss";
+import InputWithStackedChevrons from "@/components/shadcn-studio/input/input-45";
 import {
   Select,
   SelectContent,
@@ -18,6 +19,9 @@ export default function Home() {
   const [fileArrayBufferCreator, setFileArrayBufferCreator] = useState<
     (() => Promise<ArrayBuffer>) | null
   >(null);
+
+  const [capoFret, setCapoFret] = useState<number>(0);
+  const [maxFret, setMaxFret] = useState<number>(15);
 
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files![0];
@@ -78,7 +82,7 @@ export default function Home() {
           </div>
           <div id="midi-input-divier" className="border-2"></div>
           {/* Config options */}
-          <div className="p-3 flex justify-center">
+          <div className="p-3 flex justify-center gap-4">
             {/* Tuning */}
             <label htmlFor="tuning" className="min-w-40">
               Tuning
@@ -97,6 +101,19 @@ export default function Home() {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+              </div>
+            </label>
+            {/* Capo */}
+            <label htmlFor="capo" className="max-w-20">
+              Capo
+              <div id="capo" className="mt-2">
+                <InputWithStackedChevrons
+                  name="capo"
+                  defaultValue={capoFret}
+                  minValue={0}
+                  maxValue={maxFret}
+                  onChange={setCapoFret}
+                />
               </div>
             </label>
           </div>
