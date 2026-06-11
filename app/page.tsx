@@ -2,7 +2,7 @@
 
 import { tunings } from "@/app/lib/tunings";
 import styles from "@/app/styles/barberpole-bg.module.scss";
-import InputWithStackedChevrons from "@/components/shadcn-studio/input/input-45";
+import InputWithPlusMinusButtons from "@/components/shadcn-studio/input/input-plus-minus";
 import {
   Select,
   SelectContent,
@@ -104,15 +104,15 @@ export default function Home() {
               </div>
             </label>
             {/* Capo */}
-            <label htmlFor="capo" className="max-w-20">
+            <label htmlFor="capo" className="max-w-30">
               Capo
               <div id="capo" className="mt-2">
-                <InputWithStackedChevrons
+                <InputWithPlusMinusButtons
                   name="capo"
-                  defaultValue={capoFret}
+                  value={capoFret}
+                  onChange={setCapoFret}
                   minValue={0}
                   maxValue={maxFret}
-                  onChange={setCapoFret}
                 />
               </div>
             </label>
