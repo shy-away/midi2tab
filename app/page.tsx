@@ -1,6 +1,15 @@
 "use client";
 
+import { tunings } from "@/app/lib/tunings";
 import styles from "@/app/styles/barberpole-bg.module.scss";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UploadCloudIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -68,6 +77,29 @@ export default function Home() {
             </div>
           </div>
           <div id="midi-input-divier" className="border-2"></div>
+          {/* Config options */}
+          <div className="p-3 flex justify-center">
+            {/* Tuning */}
+            <label htmlFor="tuning" className="min-w-40">
+              Tuning
+              <div id="tuning" className="mt-2">
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a tuning" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectGroup>
+                      {tunings.map((tuning, tuningIndex) => (
+                        <SelectItem key={tuningIndex} value={tuning.value}>
+                          {tuning.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </label>
+          </div>
         </form>
       </div>
 
