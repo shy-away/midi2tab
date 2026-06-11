@@ -24,6 +24,7 @@ export default function Home() {
   const [maxFret, setMaxFret] = useState<number>(15);
   const [minFret, setMinFret] = useState<number>(0);
   const [handSpan, setHandSpan] = useState<number>(4);
+  const [maxNotesPerChord, setMaxNotesPerChord] = useState<number>(6);
 
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files![0];
@@ -154,6 +155,19 @@ export default function Home() {
                   name="handSpan"
                   value={handSpan}
                   onChange={setHandSpan}
+                  minValue={1}
+                  maxValue={6}
+                />
+              </div>
+            </label>
+            {/* Max Notes Per Chord */}
+            <label htmlFor="maxNotesPerChord" className="max-w-45">
+              Max Notes Per Chord
+              <div id="maxNotesPerChord" className="mt-2">
+                <InputWithPlusMinusButtons
+                  name="maxNotesPerChord"
+                  value={maxNotesPerChord}
+                  onChange={setMaxNotesPerChord}
                   minValue={1}
                   maxValue={6}
                 />
