@@ -23,6 +23,7 @@ export default function Home() {
   const [capoFret, setCapoFret] = useState<number>(0);
   const [maxFret, setMaxFret] = useState<number>(15);
   const [minFret, setMinFret] = useState<number>(0);
+  const [handSpan, setHandSpan] = useState<number>(4);
 
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files![0];
@@ -145,6 +146,19 @@ export default function Home() {
                 </div>
               </label>
             </div>
+            {/* Hand Span */}
+            <label htmlFor="handSpan" className="max-w-30">
+              Hand Span
+              <div id="handSpan" className="mt-2">
+                <InputWithPlusMinusButtons
+                  name="handSpan"
+                  value={handSpan}
+                  onChange={setHandSpan}
+                  minValue={1}
+                  maxValue={6}
+                />
+              </div>
+            </label>
           </div>
         </form>
       </div>
