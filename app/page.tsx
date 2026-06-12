@@ -75,7 +75,7 @@ export default function Home() {
 
   return (
     <div
-      className={`${styles.barberpoleBg} grow min-h-full flex flex-col items-center`}
+      className={`${styles.barberpoleBg} grow min-h-full flex flex-col items-center pb-4`}
     >
       {/* Midi Input */}
       <div className="mt-3 w-11/12 md:w-8/12 lg:max-w-200 rounded-3xl border-2 p-5 backdrop-blur-xs">

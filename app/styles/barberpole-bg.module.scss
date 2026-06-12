@@ -8,6 +8,7 @@
     #111 20px,
     #111 25px
   );
+  z-index: -2;
   animation: 2s linear 0s infinite barberpoleAnimation;
 
   @keyframes barberpoleAnimation {
@@ -29,6 +30,8 @@
     bottom: 0;
     left: 0;
     right: 0;
+
+    z-index: -1;
 
     pointer-events: none;
 
