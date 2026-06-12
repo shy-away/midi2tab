@@ -4,6 +4,11 @@ import { tunings } from "@/app/lib/tunings";
 import styles from "@/app/styles/barberpole-bg.module.scss";
 import InputWithPlusMinusButtons from "@/components/shadcn-studio/input/input-plus-minus";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -11,8 +16,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { UploadCloudIcon } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
+
+type TimeSig = {
+  top: number;
+  bottom: number;
+};
+
+const commonTimeSigs: TimeSig[] = [
+  {
+    top: 4,
+    bottom: 4,
+  },
+  {
+    top: 3,
+    bottom: 4,
+  },
+  {
+    top: 6,
+    bottom: 8,
+  },
+];
 
 export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
@@ -25,6 +51,14 @@ export default function Home() {
   const [minFret, setMinFret] = useState<number>(0);
   const [handSpan, setHandSpan] = useState<number>(4);
   const [maxNotesPerChord, setMaxNotesPerChord] = useState<number>(6);
+  const [customTimeSigTop, setCustomTimeSigTop] = useState<number>(4);
+  const [customTimeSigBottom, setCustomTimeSigBottom] = useState<number>(4);
+
+  function handleCustomTimeSigBottom(value: number) {
+    if (value === customTimeSigBottom - 1)
+      setCustomTimeSigBottom((prev) => prev / 2);
+    else setCustomTimeSigBottom((prev) => prev * 2);
+  }
 
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files![0];
@@ -173,6 +207,68 @@ export default function Home() {
                 />
               </div>
             </label>
+            {/* Time signature */}
+            <section className="flex flex-col">
+              <label htmlFor="timeSig">Time signature</label>
+              <ToggleGroup
+                id="timeSig"
+                type="single"
+                variant={"outline"}
+                className="mt-2"
+                defaultValue="4/4"
+              >
+                {commonTimeSigs.map((timeSig) => {
+                  const timeSigString = getTimeSigString(timeSig);
+
+                  return (
+                    <ToggleGroupItem
+                      key={timeSigString}
+                      value={timeSigString}
+                      aria-label={timeSigString}
+                      className="h-min py-1"
+                    >
+                      <div className="flex flex-col">
+                        <div>{timeSig.top}</div>
+                        <TimeSigDivider />
+                        <div>{timeSig.bottom}</div>
+                      </div>
+                    </ToggleGroupItem>
+                  );
+                })}
+                <ToggleGroupItem
+                  key="custom"
+                  value="custom"
+                  aria-label="custom"
+                >
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div>Custom</div>
+                    </PopoverTrigger>
+                    <PopoverContent className="max-w-40">
+                      <div id="customTimeSigTop">
+                        <InputWithPlusMinusButtons
+                          name="customTimeSigTop"
+                          value={customTimeSigTop}
+                          onChange={setCustomTimeSigTop}
+                          minValue={2}
+                          maxValue={12}
+                        />
+                      </div>
+                      <TimeSigDivider />
+                      <div id="customTimeSigBottom">
+                        <InputWithPlusMinusButtons
+                          name="customTimeSigBottom"
+                          value={customTimeSigBottom}
+                          onChange={handleCustomTimeSigBottom}
+                          minValue={2}
+                          maxValue={16}
+                        />
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </section>
           </div>
         </form>
       </div>
@@ -183,4 +279,12 @@ export default function Home() {
       }
     </div>
   );
+}
+
+function TimeSigDivider(): React.ReactElement {
+  return <div className="border-t border-white"></div>;
+}
+
+function getTimeSigString(timeSig: TimeSig): string {
+  return timeSig.top + "/" + timeSig.bottom;
 }
