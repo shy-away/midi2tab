@@ -7,9 +7,13 @@ import {
 } from "@/components/ui/dialog";
 import { CircleQuestionMarkIcon } from "lucide-react";
 
-export default function Header(): React.ReactNode {
+export default function Header({
+  className,
+}: {
+  className: string;
+}): React.ReactNode {
   return (
-    <nav className="flex items-center p-3 border-b-2">
+    <nav className={`${className} flex items-center p-3 border-b-2`}>
       <span id="name" className="mr-auto text-xl sm:text-2xl">
         Midi2Tab
       </span>
