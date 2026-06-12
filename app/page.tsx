@@ -85,7 +85,7 @@ export default function Home() {
           </div>
           <div id="midi-input-divier" className="border-2"></div>
           {/* Config options */}
-          <div className="p-3 flex justify-center gap-4">
+          <div className="p-3 flex justify-center gap-4 flex-wrap items-start">
             {/* Tuning */}
             <label htmlFor="tuning" className="min-w-40">
               Tuning
