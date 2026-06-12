@@ -1,0 +1,21 @@
+// Adapted from: https://codepen.io/EaterUsr/pen/rNoJjvz
+.bgRainbow {
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    to right in hsl,
+    hsl(359deg, 70%, 50%),
+    hsl(180deg, 70%, 50%),
+    hsl(0deg, 70%, 50%)
+  );
+
+  animation: 3s linear 0s infinite rainbowAnimation;
+
+  @keyframes rainbowAnimation {
+    from {
+      background-position: 0%;
+    }
+    to {
+      background-position: 200%;
+    }
+  }
+}
