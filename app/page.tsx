@@ -80,7 +80,7 @@ export default function Home() {
       {/* Midi Input */}
       <div className="mt-3 w-11/12 md:w-8/12 lg:max-w-200 rounded-3xl border-2 p-5 backdrop-blur-xs">
         <form action="">
-          <div className="flex-1 items-center max-w-screen-sm mx-auto mb-3 space-y-4 sm:flex sm:space-y-0">
+          <div className="grow items-center max-w-screen-sm mx-auto mb-3 space-y-4 sm:flex sm:space-y-0">
             {/*
               Midi Input Element
               Modified from: https://tailwindflex.com/@anonymous/file-input
