@@ -141,10 +141,11 @@ export default function Home() {
               </div>
             </label>
             {/* Capo */}
-            <label htmlFor="capo" className="max-w-30">
-              Capo
-              <div id="capo" className="mt-2">
+            <section className="max-w-30">
+              <span id="capo">Capo</span>
+              <div className="mt-2">
                 <InputWithPlusMinusButtons
+                  aria-labelledby="capo"
                   name="capo"
                   value={capoFret}
                   onChange={setCapoFret}
@@ -152,13 +153,14 @@ export default function Home() {
                   maxValue={maxFret}
                 />
               </div>
-            </label>
+            </section>
             <div className="flex gap-4">
               {/* Min Fret */}
-              <label htmlFor="minFret" className="max-w-30">
-                Min Fret
-                <div id="minFret" className="mt-2">
+              <section className="max-w-30">
+                <span id="minFret">Min Fret</span>
+                <div className="mt-2">
                   <InputWithPlusMinusButtons
+                    aria-labelledby="minFret"
                     name="minFret"
                     value={minFret}
                     onChange={setMinFret}
@@ -166,12 +168,13 @@ export default function Home() {
                     maxValue={maxFret}
                   />
                 </div>
-              </label>
+              </section>
               {/* Max Fret */}
-              <label htmlFor="maxFret" className="max-w-30">
-                Max Fret
-                <div id="maxFret" className="mt-2">
+              <section className="max-w-30">
+                <span id="maxFret">Max Fret</span>
+                <div className="mt-2">
                   <InputWithPlusMinusButtons
+                    aria-labelledby="maxFret"
                     name="maxFret"
                     value={maxFret}
                     onChange={setMaxFret}
@@ -179,13 +182,14 @@ export default function Home() {
                     maxValue={24}
                   />
                 </div>
-              </label>
+              </section>
             </div>
             {/* Hand Span */}
-            <label htmlFor="handSpan" className="max-w-30">
-              Hand Span
-              <div id="handSpan" className="mt-2">
+            <section className="max-w-30">
+              <span id="handSpan">Hand Span</span>
+              <div className="mt-2">
                 <InputWithPlusMinusButtons
+                  aria-labelledby="handSpan"
                   name="handSpan"
                   value={handSpan}
                   onChange={setHandSpan}
@@ -193,12 +197,13 @@ export default function Home() {
                   maxValue={6}
                 />
               </div>
-            </label>
+            </section>
             {/* Max Notes Per Chord */}
-            <label htmlFor="maxNotesPerChord" className="max-w-45">
-              Max Notes Per Chord
-              <div id="maxNotesPerChord" className="mt-2">
+            <section className="max-w-45">
+              <span id="maxNotesPerChord">Max Notes Per Chord</span>
+              <div className="mt-2">
                 <InputWithPlusMinusButtons
+                  aria-labelledby="maxNotesPerChord"
                   name="maxNotesPerChord"
                   value={maxNotesPerChord}
                   onChange={setMaxNotesPerChord}
@@ -206,7 +211,7 @@ export default function Home() {
                   maxValue={6}
                 />
               </div>
-            </label>
+            </section>
             {/* Time signature */}
             <section className="flex flex-col">
               <label htmlFor="timeSig">Time signature</label>
@@ -247,6 +252,7 @@ export default function Home() {
                     <PopoverContent className="max-w-40">
                       <div id="customTimeSigTop">
                         <InputWithPlusMinusButtons
+                          aria-label="Custom time signature top"
                           name="customTimeSigTop"
                           value={customTimeSigTop}
                           onChange={setCustomTimeSigTop}
@@ -257,6 +263,7 @@ export default function Home() {
                       <TimeSigDivider />
                       <div id="customTimeSigBottom">
                         <InputWithPlusMinusButtons
+                          aria-label="Custom time signature bottom"
                           name="customTimeSigBottom"
                           value={customTimeSigBottom}
                           onChange={handleCustomTimeSigBottom}
