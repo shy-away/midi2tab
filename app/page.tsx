@@ -1,8 +1,10 @@
 "use client";
 
+import { convertMidiToTab } from "@/app/lib/actions";
 import { tunings } from "@/app/lib/tunings";
 import styles from "@/app/styles/barberpole-bg.module.scss";
 import InputWithPlusMinusButtons from "@/components/shadcn-studio/input/input-plus-minus";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -18,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { UploadCloudIcon } from "lucide-react";
-import React, { useState } from "react";
+import { useActionState, useState } from "react";
 
 type TimeSig = {
   top: number;
@@ -42,15 +44,13 @@ const commonTimeSigs: TimeSig[] = [
 
 export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
-  const [fileArrayBufferCreator, setFileArrayBufferCreator] = useState<
-    (() => Promise<ArrayBuffer>) | null
-  >(null);
-
   const [capoFret, setCapoFret] = useState<number>(0);
   const [maxFret, setMaxFret] = useState<number>(15);
   const [minFret, setMinFret] = useState<number>(0);
   const [handSpan, setHandSpan] = useState<number>(4);
   const [maxNotesPerChord, setMaxNotesPerChord] = useState<number>(6);
+  const [timeSigTop, setTimeSigTop] = useState<number>(4);
+  const [timeSigBottom, setTimeSigBottom] = useState<number>(4);
   const [customTimeSigTop, setCustomTimeSigTop] = useState<number>(4);
   const [customTimeSigBottom, setCustomTimeSigBottom] = useState<number>(4);
 
@@ -60,18 +60,22 @@ export default function Home() {
     else setCustomTimeSigBottom((prev) => prev * 2);
   }
 
-  async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files![0];
+    if (file === undefined) return;
     setFileName(file.name);
-    setFileArrayBufferCreator(file.arrayBuffer);
   }
 
-  async function handleDrop(event: React.DragEvent<HTMLLabelElement>) {
+  function handleFileDrop(event: React.DragEvent<HTMLLabelElement>) {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     setFileName(file.name);
-    setFileArrayBufferCreator(file.arrayBuffer);
   }
+
+  const [state, formAction, isPending] = useActionState(
+    async (_: object, formData: FormData) => await convertMidiToTab(formData),
+    {},
+  );
 
   return (
     <div
@@ -79,7 +83,7 @@ export default function Home() {
     >
       {/* Midi Input */}
       <div className="mt-3 w-11/12 md:w-8/12 lg:max-w-200 rounded-3xl border-2 p-5 backdrop-blur-xs">
-        <form action="">
+        <form action={formAction}>
           <div className="grow items-center max-w-screen-sm mx-auto mb-3 space-y-4 sm:flex sm:space-y-0">
             {/*
               Midi Input Element
@@ -90,7 +94,7 @@ export default function Home() {
                 <label
                   className="flex justify-center w-full h-32 px-4 transition bg-blend-color border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-white focus:outline-none"
                   onDragOver={(e) => e.preventDefault()}
-                  onDrop={handleDrop}
+                  onDrop={handleFileDrop}
                 >
                   <span className="space-x-2 flex flex-col justify-evenly items-center">
                     {fileName && <span>Uploaded {fileName}</span>}
@@ -214,13 +218,36 @@ export default function Home() {
             </section>
             {/* Time signature */}
             <section className="flex flex-col">
-              <label htmlFor="timeSig">Time signature</label>
+              <div id="timeSig">Time signature</div>
+              <input
+                type="hidden"
+                name="timeSig"
+                value={getTimeSigString({
+                  top: timeSigTop,
+                  bottom: timeSigBottom,
+                })}
+              />
               <ToggleGroup
-                id="timeSig"
+                aria-labelledby="timeSig"
                 type="single"
                 variant={"outline"}
                 className="mt-2"
                 defaultValue="4/4"
+                onValueChange={(value: string) => {
+                  switch (value) {
+                    case "":
+                      return;
+                    case "custom":
+                      // custom values have their own handler
+                      break;
+                    default:
+                      const timeSigData = value.split("/");
+                      const timeSigTop = Number(timeSigData[0]);
+                      const timeSigBottom = Number(timeSigData[1]);
+                      setTimeSigTop(timeSigTop);
+                      setTimeSigBottom(timeSigBottom);
+                  }
+                }}
               >
                 {commonTimeSigs.map((timeSig) => {
                   const timeSigString = getTimeSigString(timeSig);
@@ -249,33 +276,40 @@ export default function Home() {
                     <PopoverTrigger asChild>
                       <div>Custom</div>
                     </PopoverTrigger>
-                    <PopoverContent className="max-w-40">
-                      <div id="customTimeSigTop">
-                        <InputWithPlusMinusButtons
-                          aria-label="Custom time signature top"
-                          name="customTimeSigTop"
-                          value={customTimeSigTop}
-                          onChange={setCustomTimeSigTop}
-                          minValue={2}
-                          maxValue={12}
-                        />
-                      </div>
+                    <PopoverContent
+                      onCloseAutoFocus={() => {
+                        setTimeSigTop(customTimeSigTop);
+                        setTimeSigBottom(customTimeSigBottom);
+                      }}
+                      className="max-w-40"
+                    >
+                      <InputWithPlusMinusButtons
+                        aria-label="Custom time signature top"
+                        name="customTimeSigTop"
+                        value={customTimeSigTop}
+                        onChange={setCustomTimeSigTop}
+                        minValue={2}
+                        maxValue={12}
+                      />
                       <TimeSigDivider />
-                      <div id="customTimeSigBottom">
-                        <InputWithPlusMinusButtons
-                          aria-label="Custom time signature bottom"
-                          name="customTimeSigBottom"
-                          value={customTimeSigBottom}
-                          onChange={handleCustomTimeSigBottom}
-                          minValue={2}
-                          maxValue={16}
-                        />
-                      </div>
+                      <InputWithPlusMinusButtons
+                        aria-label="Custom time signature bottom"
+                        name="customTimeSigBottom"
+                        value={customTimeSigBottom}
+                        onChange={handleCustomTimeSigBottom}
+                        minValue={2}
+                        maxValue={16}
+                      />
                     </PopoverContent>
                   </Popover>
                 </ToggleGroupItem>
               </ToggleGroup>
             </section>
+          </div>
+          <div className="pt-4 flex justify-center items-start">
+            <Button type="submit" size="lg">
+              Submit
+            </Button>
           </div>
         </form>
       </div>
