@@ -1,0 +1,24 @@
+.barberpoleBg {
+  --cycle-height: calc(sqrt((pow(25, 2) / 2)) * 2px);
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 1) 0px,
+      rgba(0, 0, 0, 1) var(--cycle-height),
+      rgba(0, 0, 0, 0) calc(var(--cycle-height) + 50px)
+    ),
+    repeating-linear-gradient(135deg, #000, #000 20px, #111 20px, #111 25px);
+
+  animation: 2s linear 0s infinite barberpoleAnimation;
+
+  @keyframes barberpoleAnimation {
+    from {
+      background-position-y: 0, calc(var(--cycle-height) * -1);
+    }
+
+    to {
+      background-position-y: 0, 0;
+    }
+  }
+}
