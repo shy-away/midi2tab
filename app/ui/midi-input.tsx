@@ -58,7 +58,6 @@ export default function MidiInput({
   return (
     <form
       action={action}
-      className="mt-3 w-11/12 md:w-8/12 lg:max-w-200 rounded-3xl border-2 p-5 backdrop-blur-xs"
     >
       <div className="grow items-center max-w-screen-sm mx-auto mb-3 space-y-4 sm:flex sm:space-y-0">
         {/*

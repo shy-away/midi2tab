@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@coderline/alphatab':
+        specifier: ^1.8.3
+        version: 1.8.3
       '@deemlol/next-icons':
         specifier: ^0.2.7
         version: 0.2.7(framer-motion@12.40.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -207,6 +210,10 @@ packages:
   '@babel/types@7.29.7':
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
+
+  '@coderline/alphatab@1.8.3':
+    resolution: {integrity: sha512-gauoZMBL3yzCNn4jz5qhKSmwnlwFpBG+W+HPowiBmPiD6kTH5Ntk3mCUItGqETN7Vl97REXJK6efGKOa13B4Ng==}
+    engines: {node: '>=6.0.0'}
 
   '@deemlol/next-icons@0.2.7':
     resolution: {integrity: sha512-4rCAqE2+T7A49zGnktxwZbG0i++i1PbSVsZqpVFaPWgGCVCzXmU1X+AUezSZJ0r6/HfUvx0c40rG/lmT3obvow==}
@@ -3956,6 +3963,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
+
+  '@coderline/alphatab@1.8.3': {}
 
   '@deemlol/next-icons@0.2.7(framer-motion@12.40.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
     dependencies:

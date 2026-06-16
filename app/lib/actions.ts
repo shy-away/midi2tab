@@ -1,6 +1,11 @@
 "use server";
 
-export async function convertMidiToTab(formData: FormData): Promise<object> {
+export type State = {
+  error?: string;
+  tex?: string;
+};
+
+export async function convertMidiToTab(formData: FormData): Promise<State> {
   console.log("### DATA RECEIVED ###");
 
   for (const pair of formData.entries()) {
@@ -16,5 +21,10 @@ export async function convertMidiToTab(formData: FormData): Promise<object> {
   // console.log("Array buffer:", await file.arrayBuffer());
   console.log("### END DATA RECEIVED ###");
 
-  return {};
+  let fileName = file.name.slice(0, -4);
+  if (fileName === "") fileName = "Untitled";
+
+  const tex = `\\title ${fileName} :4 3.5 5.5 7.5 3.5`;
+
+  return { tex };
 }
