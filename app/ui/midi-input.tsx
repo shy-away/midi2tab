@@ -84,7 +84,7 @@ export default function MidiInput({
               </span>
               <input
                 type="file"
-                name="file_upload"
+                name="file-upload"
                 className="hidden"
                 accept="midi"
                 id="input"
@@ -138,7 +138,7 @@ export default function MidiInput({
             <div className="mt-2">
               <InputWithPlusMinusButtons
                 aria-labelledby="minFret"
-                name="minFret"
+                name="min-fret"
                 value={minFret}
                 onChange={setMinFret}
                 minValue={capoFret}
@@ -152,7 +152,7 @@ export default function MidiInput({
             <div className="mt-2">
               <InputWithPlusMinusButtons
                 aria-labelledby="maxFret"
-                name="maxFret"
+                name="max-fret"
                 value={maxFret}
                 onChange={setMaxFret}
                 minValue={minFret}
@@ -167,7 +167,7 @@ export default function MidiInput({
           <div className="mt-2">
             <InputWithPlusMinusButtons
               aria-labelledby="handSpan"
-              name="handSpan"
+              name="hand-span"
               value={handSpan}
               onChange={setHandSpan}
               minValue={1}
@@ -181,7 +181,7 @@ export default function MidiInput({
           <div className="mt-2">
             <InputWithPlusMinusButtons
               aria-labelledby="maxNotesPerChord"
-              name="maxNotesPerChord"
+              name="max-notes-per-chord"
               value={maxNotesPerChord}
               onChange={setMaxNotesPerChord}
               minValue={1}
@@ -194,11 +194,13 @@ export default function MidiInput({
           <div id="timeSig">Time signature</div>
           <input
             type="hidden"
-            name="timeSig"
-            value={getTimeSigString({
-              top: timeSigTop,
-              bottom: timeSigBottom,
-            })}
+            name="time-sig-top"
+            value={timeSigTop}
+          />
+          <input
+            type="hidden"
+            name="time-sig-bottom"
+            value={timeSigBottom}
           />
           <ToggleGroup
             aria-labelledby="timeSig"
@@ -254,7 +256,6 @@ export default function MidiInput({
                 >
                   <InputWithPlusMinusButtons
                     aria-label="Custom time signature top"
-                    name="customTimeSigTop"
                     value={customTimeSigTop}
                     onChange={setCustomTimeSigTop}
                     minValue={2}
@@ -263,7 +264,6 @@ export default function MidiInput({
                   <TimeSigDivider />
                   <InputWithPlusMinusButtons
                     aria-label="Custom time signature bottom"
-                    name="customTimeSigBottom"
                     value={customTimeSigBottom}
                     onChange={handleCustomTimeSigBottom}
                     minValue={2}

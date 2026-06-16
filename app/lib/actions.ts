@@ -12,7 +12,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     console.log(pair[0], pair[1]);
   }
 
-  const file: File = formData.get("file_upload") as File;
+  const file: File = formData.get("file-upload") as File;
 
   if (file.size === 0) {
     return { error: "No MIDI uploaded." };
