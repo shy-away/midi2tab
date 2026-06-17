@@ -87,7 +87,7 @@ export default function MidiInput({
                 type="file"
                 name="file-upload"
                 className="hidden"
-                accept="midi"
+                accept=".mid"
                 id="input"
                 onChange={handleFileUpload}
               />
