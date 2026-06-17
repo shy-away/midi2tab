@@ -31,7 +31,7 @@ export type State = {
 };
 
 export async function convertMidiToTab(formData: FormData): Promise<State> {
-  const rawFormData: { [key: string]: unknown } = {};
+  const rawFormData: { [key: string]: FormDataEntryValue } = {};
   for (const pair of formData.entries()) {
     rawFormData[pair[0]] = pair[1];
   }
