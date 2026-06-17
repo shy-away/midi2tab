@@ -58,8 +58,27 @@ export default function Home() {
       ) : (
         <HomepageSection>
           <div className="flex flex-col justify-center items-center gap-3">
-            {state.error ? (
-              <div>{state.error}</div>
+            {state.errors ? (
+              <div className="text-red-400">
+                <h2 className="text-xl mb-2">There were errors.</h2>
+                {state.errors.map((error, errorIndex) => (
+                  <div key={errorIndex} className="my-2">
+                    {error[0]}:
+                    <ul className="list-disc list-inside wrap-normal">
+                      {error[1].map(
+                        (
+                          errorDescription: string,
+                          errorDescriptionIndex: number,
+                        ) => (
+                          <li key={errorDescriptionIndex}>
+                            {errorDescription}
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="min-w-12/12 bg-white" ref={texRef}></div>
             )}
