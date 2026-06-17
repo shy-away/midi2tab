@@ -27,6 +27,7 @@ export default function MidiInput({
   action: (payload: FormData) => void;
 }) {
   const [fileName, setFileName] = useState<string | null>(null);
+  const [tuning, setTuning] = useState("e_standard");
   const [capoFret, setCapoFret] = useState<number>(0);
   const [maxFret, setMaxFret] = useState<number>(15);
   const [minFret, setMinFret] = useState<number>(0);
@@ -101,7 +102,12 @@ export default function MidiInput({
         <label htmlFor="tuning" className="min-w-40">
           Tuning
           <div id="tuning" className="mt-2">
-            <Select>
+            <Select
+              name="tuning"
+              value={tuning}
+              onValueChange={setTuning}
+              defaultValue="e_standard"
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a tuning" />
               </SelectTrigger>
