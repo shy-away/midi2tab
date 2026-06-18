@@ -2,6 +2,7 @@
 
 import { commonTimeSigs, getTimeSigString } from "@/app/lib/time-sigs";
 import { tunings } from "@/app/lib/tunings";
+import MidiFileUpload from "@/app/ui/midi-file-upload";
 import InputWithPlusMinusButtons from "@/components/shadcn-studio/input/input-plus-minus";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { UploadCloudIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function MidiInput({
@@ -26,7 +26,6 @@ export default function MidiInput({
 }: {
   action: (payload: FormData) => void;
 }) {
-  const [fileName, setFileName] = useState<string | null>(null);
   const [tuning, setTuning] = useState("e_standard");
   const [capoFret, setCapoFret] = useState<number>(0);
   const [maxFret, setMaxFret] = useState<number>(15);
@@ -44,56 +43,10 @@ export default function MidiInput({
     else setCustomTimeSigBottom((prev) => prev * 2);
   }
 
-  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files![0];
-    if (file === undefined) return;
-    setFileName(file.name);
-  }
-
-  function handleFileDrop(event: React.DragEvent<HTMLLabelElement>) {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    setFileName(file.name);
-  }
-
   return (
-    <form
-      action={action}
-    >
+    <form action={action}>
       <div className="grow items-center max-w-screen-sm mx-auto mb-3 space-y-4 sm:flex sm:space-y-0">
-        {/*
-          Midi Input Element
-          Modified from: https://tailwindflex.com/@anonymous/file-input
-        */}
-        <div className="relative w-full">
-          <div className="items-center justify-center max-w-xl mx-auto">
-            <label
-              className="flex justify-center w-full h-32 px-4 transition bg-blend-color border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-white focus:outline-none"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleFileDrop}
-            >
-              <span className="space-x-2 flex flex-col justify-evenly items-center">
-                {fileName && <span>Uploaded {fileName}</span>}
-                <span className="flex items-center space-x-2">
-                  <UploadCloudIcon color="#4a5565" />
-                  {/* matches tailwind's text-gray-600 */}
-                  <span className="font-medium text-gray-600">
-                    Drag and drop, or
-                    <span className="text-blue-600 underline ml-1">browse</span>
-                  </span>
-                </span>
-              </span>
-              <input
-                type="file"
-                name="file-upload"
-                className="hidden"
-                accept=".mid"
-                id="input"
-                onChange={handleFileUpload}
-              />
-            </label>
-          </div>
-        </div>
+        <MidiFileUpload name="file-upload" />
       </div>
       <div id="midi-input-divier" className="border-2"></div>
       {/* Config options */}
@@ -198,16 +151,8 @@ export default function MidiInput({
         {/* Time signature */}
         <section className="flex flex-col">
           <div id="timeSig">Time signature</div>
-          <input
-            type="hidden"
-            name="time-sig-top"
-            value={timeSigTop}
-          />
-          <input
-            type="hidden"
-            name="time-sig-bottom"
-            value={timeSigBottom}
-          />
+          <input type="hidden" name="time-sig-top" value={timeSigTop} />
+          <input type="hidden" name="time-sig-bottom" value={timeSigBottom} />
           <ToggleGroup
             aria-labelledby="timeSig"
             type="single"
