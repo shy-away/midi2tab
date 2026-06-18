@@ -39,9 +39,15 @@ export default function MidiInput({
   const [customTimeSigBottom, setCustomTimeSigBottom] = useState<number>(4);
 
   function handleCustomTimeSigBottom(value: number) {
+    const updateTimeSigBottomAndReturn = (x: number) => {
+      setTimeSigBottom(x);
+      return x;
+    };
+
     if (value === customTimeSigBottom - 1)
-      setCustomTimeSigBottom((prev) => prev / 2);
-    else setCustomTimeSigBottom((prev) => prev * 2);
+      setCustomTimeSigBottom((prev) => updateTimeSigBottomAndReturn(prev / 2));
+    else
+      setCustomTimeSigBottom((prev) => updateTimeSigBottomAndReturn(prev * 2));
   }
 
   return (
@@ -193,17 +199,14 @@ export default function MidiInput({
                 <PopoverTrigger asChild>
                   <div>Custom</div>
                 </PopoverTrigger>
-                <PopoverContent
-                  onCloseAutoFocus={() => {
-                    setTimeSigTop(customTimeSigTop);
-                    setTimeSigBottom(customTimeSigBottom);
-                  }}
-                  className="max-w-40"
-                >
+                <PopoverContent className="max-w-40">
                   <InputWithPlusMinusButtons
                     aria-label="Custom time signature top"
                     value={customTimeSigTop}
-                    onChange={setCustomTimeSigTop}
+                    onChange={(value: number) => {
+                      setCustomTimeSigTop(value);
+                      setTimeSigTop(value);
+                    }}
                     minValue={2}
                     maxValue={12}
                   />
