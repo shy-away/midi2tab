@@ -1,8 +1,9 @@
 import { UploadCloudIcon } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function MidiFileUpload({ name }: { name: string }) {
   const [fileName, setFileName] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files![0];
@@ -13,6 +14,15 @@ export default function MidiFileUpload({ name }: { name: string }) {
   function handleFileDrop(event: React.DragEvent<HTMLLabelElement>) {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
+    if (!file) return;
+
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+
+    if (inputRef.current) {
+      inputRef.current.files = dataTransfer.files;
+    }
+
     setFileName(file.name);
   }
 
@@ -37,6 +47,7 @@ export default function MidiFileUpload({ name }: { name: string }) {
             </span>
           </span>
           <input
+            ref={inputRef}
             type="file"
             name={name}
             className="hidden"
