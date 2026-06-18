@@ -188,7 +188,7 @@ export default function MidiInput({
                 </ToggleGroupItem>
               );
             })}
-            <ToggleGroupItem key="custom" value="custom" aria-label="custom">
+            <ToggleGroupItem value="custom" aria-label="Custom">
               <Popover>
                 <PopoverTrigger asChild>
                   <div>Custom</div>
