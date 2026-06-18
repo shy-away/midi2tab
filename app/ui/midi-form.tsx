@@ -32,6 +32,7 @@ export default function MidiInput({
   const [minFret, setMinFret] = useState<number>(0);
   const [handSpan, setHandSpan] = useState<number>(4);
   const [maxNotesPerChord, setMaxNotesPerChord] = useState<number>(6);
+  const [selectedTimeSig, setSelectedTimeSig] = useState("4/4");
   const [timeSigTop, setTimeSigTop] = useState<number>(4);
   const [timeSigBottom, setTimeSigBottom] = useState<number>(4);
   const [customTimeSigTop, setCustomTimeSigTop] = useState<number>(4);
@@ -158,20 +159,14 @@ export default function MidiInput({
             type="single"
             variant={"outline"}
             className="mt-2"
-            defaultValue="4/4"
+            value={selectedTimeSig}
             onValueChange={(value: string) => {
-              switch (value) {
-                case "":
-                  return;
-                case "custom":
-                  // custom values have their own handler
-                  break;
-                default:
-                  const timeSigData = value.split("/");
-                  const timeSigTop = Number(timeSigData[0]);
-                  const timeSigBottom = Number(timeSigData[1]);
-                  setTimeSigTop(timeSigTop);
-                  setTimeSigBottom(timeSigBottom);
+              if (!value) return;
+              setSelectedTimeSig(value);
+              if (value !== "custom") {
+                const [top, bottom] = value.split("/").map(Number);
+                setTimeSigTop(top);
+                setTimeSigBottom(bottom);
               }
             }}
           >
