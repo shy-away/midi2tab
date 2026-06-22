@@ -2,7 +2,7 @@
 
 import { convertMidiToTab, State } from "@/app/lib/actions";
 import styles from "@/app/styles/barberpole-bg.module.scss";
-import MidiInput from "@/app/ui/midi-input";
+import MidiInput from "@/app/ui/midi-form";
 import { Button } from "@/components/ui/button";
 import { AlphaTabApi } from "@coderline/alphatab";
 import { useActionState, useEffect, useRef, useState } from "react";
