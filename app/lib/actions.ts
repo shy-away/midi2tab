@@ -52,7 +52,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   // console.log("Array buffer:", await file.arrayBuffer());
 
-  let fileName = file.name.slice(0, -4);
+  let fileName = file.name.replace(/\.mid$/, "");
   if (fileName === "") fileName = "Untitled";
 
   const tex = `\\title ${fileName} :4 3.5 5.5 7.5 3.5`;
