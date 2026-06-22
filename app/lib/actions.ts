@@ -31,26 +31,25 @@ export type State = {
 };
 
 export async function convertMidiToTab(formData: FormData): Promise<State> {
+  /* Form validation */
+
   const rawFormData: { [key: string]: FormDataEntryValue } = {};
   for (const pair of formData.entries()) {
     rawFormData[pair[0]] = pair[1];
   }
-  // console.log(rawFormData);
 
   const validatedFormData = ConversionFormDataSchema.safeParse(rawFormData);
-
   if (!validatedFormData.success) {
     const fieldErrors = z.flattenError(validatedFormData.error).fieldErrors;
     return { errors: Object.entries(fieldErrors) };
   }
 
   const file: File = formData.get("file-upload") as File;
-
   if (file.size === 0) {
     return { errors: [["MIDI", ["No MIDI uploaded."]]] };
   }
 
-  // console.log("Array buffer:", await file.arrayBuffer());
+  /* alphaTex generation */
 
   let fileName = file.name.replace(/\.mid$/, "");
   if (fileName === "") fileName = "Untitled";
