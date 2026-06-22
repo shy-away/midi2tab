@@ -11,11 +11,7 @@ export default function Footer(): React.ReactElement {
         >
           shy-away
         </div>
-        <GitHub
-          size={16}
-          strokeWidth={1.5}
-          className="inline ml-1"
-        />
+        <GitHub size={16} strokeWidth={1.5} className="inline ml-1" />
       </a>
     </div>
   );
