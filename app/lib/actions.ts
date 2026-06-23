@@ -1,6 +1,9 @@
 "use server";
 
+import { SlicerInputNote } from "@/app/lib/midi/slicer";
 import { Tuning, tunings } from "@/app/lib/tunings";
+import { Midi } from "@tonejs/midi";
+import { Note } from "@tonejs/midi/dist/Note";
 import z from "zod";
 
 const maxAllowableFret = 24;
@@ -48,6 +51,20 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   if (file.size === 0) {
     return { errors: [["MIDI", ["No MIDI uploaded."]]] };
   }
+
+  /* Slice creation */
+
+  const midiNotes: SlicerInputNote[] = new Midi(
+    await file.arrayBuffer(),
+  ).tracks[0].notes.map((e: Note): SlicerInputNote => {
+    const on = e.ticks;
+    return {
+      pitch: e.midi,
+      on,
+      off: on + e.durationTicks,
+    };
+  });
+  // console.log(midiNotes);
 
   /* alphaTex generation */
 
