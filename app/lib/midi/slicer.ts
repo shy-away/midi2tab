@@ -36,6 +36,36 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
 
   const slices: Slice[] = [{ notes: [], start: 0, end: endTick }];
 
+  /**
+   * Utility to dequeue note(s) from activePQ and create new slice ending at `offTime`.
+   * @param offTime Midi tick to slice up to
+   */
+  const processNoteOffs = (offTime: number) => {
+    // edge case: early return at end of track
+    if (offTime === endTick) {
+      activePQ.clear();
+      return;
+    }
+
+    // retrieve all notes that will end on this slice
+    while (!activePQ.isEmpty() && activePQ.front()!.off === offTime) {
+      activePQ.dequeue();
+    }
+
+    // create new slice from remaining notes
+    slices.at(-1)!.end = offTime;
+
+    const remainingNotes = activePQ.toArray().map(({ pitch }) => {
+      return { pitch, holdover: true };
+    });
+
+    slices.push({
+      start: offTime,
+      end: endTick,
+      notes: remainingNotes,
+    });
+  };
+
   for (let i = 0; i < notes.length; i++) {
     const currentNote = notes[i];
     const lastSlice = slices.at(-1)!;
@@ -44,26 +74,7 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
       // next event is note-off(s) from activePQ (or next note-off matches currentNote.on)
 
       const offTime = activePQ.front()!.off;
-
-      // edge case: break at end of track
-      if (offTime === endTick) break;
-
-      // retrieve all notes that will end on this slice
-      while (!activePQ.isEmpty() && activePQ.front()!.off === offTime) {
-        activePQ.dequeue();
-      }
-
-      // create new slice from all remaining notes
-      lastSlice.end = offTime;
-      const remainingNotes = activePQ.toArray().map(({ pitch }) => {
-        return { pitch, holdover: true };
-      });
-
-      slices.push({
-        start: offTime,
-        end: endTick,
-        notes: remainingNotes,
-      });
+      processNoteOffs(offTime);
 
       // if end of slice matches currentNote start, defer processing currentNote to next iteration
       if (offTime === currentNote.on) i--;
@@ -101,25 +112,8 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
 
   // process remaining active notes, if any
   while (!activePQ.isEmpty()) {
-    // group by note-off
     const offTime = activePQ.front()!.off;
-    if (offTime === endTick) break;
-
-    while (!activePQ.isEmpty() && activePQ.front()!.off === offTime) {
-      activePQ.dequeue();
-    }
-
-    slices.at(-1)!.end = offTime;
-
-    const remainingNotes = activePQ.toArray().map(({ pitch }) => {
-      return { pitch, holdover: true };
-    });
-
-    slices.push({
-      start: offTime,
-      end: endTick,
-      notes: remainingNotes,
-    });
+    processNoteOffs(offTime);
   }
 
   return slices;
