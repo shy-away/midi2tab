@@ -36,6 +36,26 @@ describe("Slice generator", () => {
     });
   });
 
+  describe("Single note input (leading rest)", () => {
+    const oneNoteInputLeadingRest = {
+      endTick: 960,
+      notes: [{ pitch: 60, on: 480, off: 960 }],
+    };
+
+    const expectedSlices: Slice[] = [
+      { notes: [], start: 0, end: 480 },
+      { notes: [{ pitch: 60, holdover: false }], start: 480, end: 960 },
+    ];
+
+    it("returns two slice", () => {
+      expect(slicer(oneNoteInputLeadingRest).length).toEqual(2);
+    });
+
+    it("returns correct slices", () => {
+      expect(slicer(oneNoteInputLeadingRest)).toEqual<Slice[]>(expectedSlices);
+    });
+  });
+
   describe("Two note input", () => {
     const twoNoteInput = {
       endTick: 960,
