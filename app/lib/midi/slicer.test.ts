@@ -1,26 +1,40 @@
 import slicer from "./slicer";
 
 describe("Slice generator", () => {
-  const dummyInput = { endTick: 0, notes: [] };
+  describe("Basics", () => {
+    const dummyInput = { endTick: 0, notes: [] };
 
-  const complexInput = {
-    endTick: 2000,
-    notes: [
-      { pitch: 60, on: 10, off: 480 },
-      { pitch: 60, on: 10, off: 960 },
-      { pitch: 60, on: 0, off: 480 },
-    ],
-  };
+    it("should exist", () => {
+      expect(slicer).toBeDefined();
+    });
 
-  it("should exist", () => {
-    expect(slicer).toBeDefined();
+    it("should return an array", () => {
+      expect(slicer(dummyInput)).toBeInstanceOf(Array);
+    });
+
+    it("returns at least one element", () => {
+      expect(slicer(dummyInput).length).toBeGreaterThanOrEqual(1);
+    });
   });
 
-  it("should return an array", () => {
-    expect(slicer(dummyInput)).toBeInstanceOf(Array);
+  describe("Two note input", () => {
+    const twoNoteInput = {
+      endTick: 960,
+      notes: [
+        { pitch: 60, on: 0, off: 480 },
+        { pitch: 62, on: 480, off: 960 },
+      ],
+    };
   });
 
-  it("returns at least one element", () => {
-    expect(slicer(dummyInput).length).toBeGreaterThanOrEqual(1);
+  describe("Three note input", () => {
+    const threeNoteInput = {
+      endTick: 1920,
+      notes: [
+        { pitch: 62, on: 480, off: 1440 },
+        { pitch: 60, on: 0, off: 960 },
+        { pitch: 64, on: 0, off: 480 },
+      ],
+    };
   });
 });
