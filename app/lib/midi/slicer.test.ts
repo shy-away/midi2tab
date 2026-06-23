@@ -1,4 +1,4 @@
-import slicer, { Slice } from "./slicer";
+import slicer, { Slice, SliceNote } from "./slicer";
 
 describe("Slice generator", () => {
   describe("Basics", () => {
@@ -59,7 +59,7 @@ describe("Slice generator", () => {
     });
   });
 
-  describe("Three note input", () => {
+  describe("Three note input (with trailing rest)", () => {
     const threeNoteInput = {
       endTick: 1920,
       notes: [
@@ -68,5 +68,43 @@ describe("Slice generator", () => {
         { pitch: 64, on: 0, off: 480 },
       ],
     };
+
+    const expectedSlices: Slice[] = [
+      {
+        notes: [
+          { pitch: 60, holdover: false },
+          { pitch: 64, holdover: false },
+        ],
+        start: 0,
+        end: 480,
+      },
+      {
+        notes: [
+          { pitch: 60, holdover: true },
+          { pitch: 62, holdover: false },
+        ],
+        start: 480,
+        end: 960,
+      },
+      { notes: [{ pitch: 62, holdover: true }], start: 960, end: 1440 },
+      { notes: [], start: 1440, end: 1920 },
+    ];
+
+    it("creates four slices", () => {
+      expect(slicer(threeNoteInput).length).toEqual(4);
+    });
+
+    it("returns correct slices", () => {
+      const returnedSlices = slicer(threeNoteInput);
+      const sortCb = (a: SliceNote, b: SliceNote) => a.pitch - b.pitch;
+
+      for (let i = 0; i < expectedSlices.length; i++) {
+        expect(returnedSlices[i].start).toEqual(expectedSlices[i].start);
+        expect(returnedSlices[i].end).toEqual(expectedSlices[i].end);
+        expect(returnedSlices[i].notes.toSorted(sortCb)).toEqual(
+          expectedSlices[i].notes.toSorted(sortCb),
+        );
+      }
+    });
   });
 });
