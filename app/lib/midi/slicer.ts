@@ -9,6 +9,12 @@ export type SlicerInput = {
   notes: SlicerInputNote[];
 };
 
-export default function slicer(input: SlicerInput) {
+export type Slice = {
+  notes: { pitch: number; holdover: boolean }[];
+  start: number;
+  end: number;
+};
+
+export default function slicer(input: SlicerInput): Slice[] {
   return [];
 }
