@@ -1,7 +1,9 @@
 import slicer from "./slicer";
 
 describe("Slice generator", () => {
-  const dummyInput = {
+  const dummyInput = { endTick: 0, notes: [] };
+
+  const complexInput = {
     endTick: 2000,
     notes: [
       { pitch: 60, on: 10, off: 480 },

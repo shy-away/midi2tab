@@ -21,6 +21,10 @@ export type SliceNote = {
 };
 
 export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
+  if (notes.length === 0) {
+    return [{ notes: [], start: 0, end: endTick }];
+  }
+
   // sort by note on asc, breaking ties by note off asc
   notes.sort((a, b) => (a.on !== b.on ? a.on - b.on : a.off - b.off));
 
