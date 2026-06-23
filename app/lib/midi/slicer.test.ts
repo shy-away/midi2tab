@@ -1,4 +1,4 @@
-import slicer from "./slicer";
+import slicer, { Slice } from "./slicer";
 
 describe("Slice generator", () => {
   describe("Basics", () => {
@@ -14,6 +14,25 @@ describe("Slice generator", () => {
 
     it("returns at least one element", () => {
       expect(slicer(dummyInput).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe("Single note input", () => {
+    const oneNoteInput = {
+      endTick: 480,
+      notes: [{ pitch: 60, on: 0, off: 480 }],
+    };
+
+    const expectedSlices: Slice[] = [
+      { notes: [{ pitch: 60, holdover: false }], start: 0, end: 480 },
+    ];
+
+    it("returns one slice", () => {
+      expect(slicer(oneNoteInput).length).toEqual(1);
+    });
+
+    it("returns correct slice", () => {
+      expect(slicer(oneNoteInput)).toEqual<Slice[]>(expectedSlices);
     });
   });
 
