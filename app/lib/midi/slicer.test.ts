@@ -44,6 +44,19 @@ describe("Slice generator", () => {
         { pitch: 62, on: 480, off: 960 },
       ],
     };
+
+    const expectedSlices: Slice[] = [
+      { notes: [{ pitch: 60, holdover: false }], start: 0, end: 480 },
+      { notes: [{ pitch: 62, holdover: false }], start: 480, end: 960 },
+    ];
+
+    it("creates two slices", () => {
+      expect(slicer(twoNoteInput).length).toEqual(2);
+    });
+
+    it("returns correct slices", () => {
+      expect(slicer(twoNoteInput)).toEqual<Slice[]>(expectedSlices);
+    });
   });
 
   describe("Three note input", () => {
