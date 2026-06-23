@@ -99,5 +99,28 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
     }
   }
 
+  // process remaining active notes, if any
+  while (!activePQ.isEmpty()) {
+    // group by note-off
+    const offTime = activePQ.front()!.off;
+    if (offTime === endTick) break;
+
+    while (!activePQ.isEmpty() && activePQ.front()!.off === offTime) {
+      activePQ.dequeue();
+    }
+
+    slices.at(-1)!.end = offTime;
+
+    const remainingNotes = activePQ.toArray().map(({ pitch }) => {
+      return { pitch, holdover: true };
+    });
+
+    slices.push({
+      start: offTime,
+      end: endTick,
+      notes: remainingNotes,
+    });
+  }
+
   return slices;
 }
