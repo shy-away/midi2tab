@@ -1,6 +1,6 @@
 "use server";
 
-import { SlicerInputNote } from "@/app/lib/midi/slicer";
+import slicer, { SlicerInputNote } from "@/app/lib/midi/slicer";
 import { Tuning, tunings } from "@/app/lib/tunings";
 import { Midi } from "@tonejs/midi";
 import { Note } from "@tonejs/midi/dist/Note";
@@ -54,17 +54,21 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   /* Slice creation */
 
-  const midiNotes: SlicerInputNote[] = new Midi(
-    await file.arrayBuffer(),
-  ).tracks[0].notes.map((e: Note): SlicerInputNote => {
-    const on = e.ticks;
-    return {
-      pitch: e.midi,
-      on,
-      off: on + e.durationTicks,
-    };
-  });
-  // console.log(midiNotes);
+  const midi = new Midi(await file.arrayBuffer());
+  const notes: SlicerInputNote[] = midi.tracks[0].notes.map(
+    (e: Note): SlicerInputNote => {
+      const on = e.ticks;
+      return {
+        pitch: e.midi,
+        on,
+        off: on + e.durationTicks,
+      };
+    },
+  );
+
+  const slices = slicer({ notes, endTick: midi.durationTicks });
+
+  // console.log(JSON.stringify(slices, undefined, 2));
 
   /* alphaTex generation */
 
