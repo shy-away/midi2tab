@@ -66,7 +66,15 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     },
   );
 
-  const slices = slicer({ notes, endTick: midi.durationTicks });
+  let erred: boolean = false;
+
+  const slices = slicer({ notes, endTick: midi.durationTicks }, () => {
+    erred = true;
+  });
+
+  if (erred) {
+    return { errors: [["MIDI Slicer", ["Too many notes at once."]]] };
+  }
 
   // console.log(JSON.stringify(slices, undefined, 2));
 
