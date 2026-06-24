@@ -1,6 +1,6 @@
 "use server";
 
-import slicer, { SlicerInputNote } from "@/app/lib/midi/slicer";
+import slicer, { SlicerInputNote } from "@/app/lib/algs/slicer";
 import { Tuning, tunings } from "@/app/lib/tunings";
 import { Midi } from "@tonejs/midi";
 import { Note } from "@tonejs/midi/dist/Note";
