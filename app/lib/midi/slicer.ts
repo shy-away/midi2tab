@@ -23,8 +23,10 @@ export type SliceNote = {
 };
 
 export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
+  const slices: Slice[] = [{ notes: [], start: 0, end: endTick }];
+
   if (notes.length === 0) {
-    return [{ notes: [], start: 0, end: endTick }];
+    return slices;
   }
 
   // sort by note on asc, breaking ties by note off asc
@@ -33,8 +35,6 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
   const activePQ = new PriorityQueue<SlicerInputNote>(
     (a: SlicerInputNote, b: SlicerInputNote) => a.off - b.off,
   );
-
-  const slices: Slice[] = [{ notes: [], start: 0, end: endTick }];
 
   /**
    * Utility to dequeue note(s) from activePQ and create new slice ending at `offTime`.
