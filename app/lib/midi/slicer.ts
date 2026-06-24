@@ -22,7 +22,7 @@ export type SliceNote = {
   holdover: boolean;
 };
 
-export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
+export default function slicer({ endTick, notes }: SlicerInput, errorCb?: () => void): Slice[] | undefined {
   const slices: Slice[] = [{ notes: [], start: 0, end: endTick }];
 
   if (notes.length === 0) {
@@ -107,6 +107,12 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
 
       // always enqueue newly processed currentNote
       activePQ.enqueue(currentNote);
+
+      // trigger error if more than 6 notes at once
+      if (activePQ.size() > 6 && errorCb) {
+        errorCb();
+        return;
+      }
     }
   }
 
