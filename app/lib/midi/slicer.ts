@@ -29,8 +29,7 @@ export default function slicer({ endTick, notes }: SlicerInput, errorCb?: () => 
     return slices;
   }
 
-  // sort by note on asc, breaking ties by note off asc
-  notes.sort((a, b) => (a.on !== b.on ? a.on - b.on : a.off - b.off));
+  notes.sort((a, b) => a.on - b.on);
 
   const activePQ = new PriorityQueue<SlicerInputNote>(
     (a: SlicerInputNote, b: SlicerInputNote) => a.off - b.off,
