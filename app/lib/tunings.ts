@@ -1,25 +1,25 @@
+import { Pitch } from "@/app/lib/types";
+
 export type Tuning = {
   value: string;
   name: string;
-  pitches: Array<number>;
+  pitches: [Pitch, Pitch, Pitch, Pitch, Pitch, Pitch];
 };
-
-// TODO: add pitch data
 
 export const tunings: Tuning[] = [
   {
     value: "e_standard",
     name: "E Standard",
-    pitches: [],
+    pitches: [40, 45, 50, 55, 59, 64],
   },
   {
     value: "d_drop",
     name: "Drop D",
-    pitches: [],
+    pitches: [38, 45, 50, 55, 59, 64],
   },
   {
     value: "dadgad",
     name: "DADGAD",
-    pitches: [],
+    pitches: [38, 45, 50, 55, 57, 62],
   },
 ];
