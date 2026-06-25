@@ -1,1 +1,17 @@
-export default function chordFinder() {}
+import { Enumerator, Pitch } from "@/app/lib/types";
+
+export type Chord = {
+  fingering: [GuitarString, Fret, Finger][];
+  difficulty: number;
+};
+
+export type GuitarString = Enumerator<6, []>;
+export type Finger = Enumerator<4, []>;
+export type Fret = Enumerator<25, []>;
+
+export default function chordFinder(
+  pitches: Pitch[],
+  errorCb?: (message: string) => void,
+): Chord[] | undefined {
+  return;
+}
