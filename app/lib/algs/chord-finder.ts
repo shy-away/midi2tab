@@ -7,7 +7,7 @@ export type Chord = {
 };
 
 export type GuitarString = Enumerator<6, []>;
-export type Finger = Enumerator<4, []>;
+export type Finger = Enumerator<4, []> | null;
 export type Fret = Enumerator<25, []>;
 export type HandSpan = Exclude<Enumerator<7, []>, Enumerator<1, []>>;
 
