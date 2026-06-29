@@ -33,7 +33,7 @@ export default function chordFinder(
     const possiblePlacements: Placement[] = [];
 
     for (let guitarString: GuitarString = 0; guitarString < 6; guitarString++) {
-      const possibleFret = pitch - tuning.pitches[guitarString];
+      const possibleFret = pitch - (tuning.pitches[guitarString] + capo);
 
       if (possibleFret >= minFret && possibleFret <= maxFret)
         possiblePlacements.push([guitarString, possibleFret] as Placement);
