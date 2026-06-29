@@ -82,10 +82,9 @@ export default function chordFinder(
       return;
     }
 
-    // always false by this point, but silences TS warnings
-    if (!currentMinFret || !currentMaxFret) return;
-
     // determine min/max available next frets
+    currentMinFret = currentMinFret ?? 0;
+    currentMaxFret = currentMaxFret ?? ((maxFret - capo) as Fret);
     const availableSpan = span - (currentMaxFret - currentMinFret + 1);
     const minAvailableFret = currentMinFret - availableSpan;
     const maxAvailableFret = currentMaxFret + availableSpan;
