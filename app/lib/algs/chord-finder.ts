@@ -1,5 +1,6 @@
 import { Tuning } from "@/app/lib/tunings";
 import { Enumerator, Pitch } from "@/app/lib/types";
+import { Combination, Permutation } from "js-combinatorics";
 
 export type Chord = {
   fingering: FingerAssignment[];
@@ -112,6 +113,84 @@ export default function chordFinder(
   })();
 
   // console.log(voicings);
+
+  /* Fingering assignment */
+
+  const getFingerPermutations = (numNotes: number): number[][] => {
+    const fingerPermutations: number[][] = [];
+
+    for (const combo of new Combination([0, 1, 2, 3], numNotes)) {
+      [...new Permutation(combo)].forEach((permutation) =>
+        fingerPermutations.push(permutation),
+      );
+    }
+
+    return fingerPermutations;
+  };
+
+  const fingerings: FingerAssignment[][] = [];
+
+  for (const voicing of voicings) {
+    const openNotes: Placement[] = [];
+    const frettedNotes: Placement[] = [];
+
+    voicing.forEach((placement: Placement) => {
+      if (placement[1] === 0) openNotes.push(placement);
+      else frettedNotes.push(placement);
+    });
+
+    // sort by fret (placement[1]) ascending, breaking ties by string (placement[0]) descending
+    frettedNotes.sort((a: Placement, b: Placement) =>
+      a[1] !== b[1] ? a[1] - b[1] : b[0] - a[0],
+    );
+
+    const fingerPermutations = getFingerPermutations(frettedNotes.length);
+
+    for (const perm of fingerPermutations) {
+      let isValidPerm: boolean = true;
+
+      for (let i = 0; i < perm.length - 1; i++) {
+        const currentFinger = perm[i];
+        const nextFinger = perm[i + 1];
+        const currentNoteFret = frettedNotes[i][1];
+        const nextNoteFret = frettedNotes[i + 1][1];
+
+        // if next note is on a higher fret, next finger must be greater than current AND must be valid given fret distance
+        if (nextNoteFret > currentNoteFret) {
+          const fretDistance = nextNoteFret - currentNoteFret;
+          if (!(nextFinger >= currentFinger + fretDistance)) {
+            isValidPerm = false;
+            break;
+          }
+        }
+
+        // if next note is on same fret, next finger must be greater than current
+        else {
+          if (!(nextFinger > currentFinger)) {
+            isValidPerm = false;
+            break;
+          }
+        }
+      }
+
+      if (isValidPerm) {
+        fingerings.push([
+          ...openNotes.map(
+            (p: Placement): FingerAssignment => [p[0], p[1], null],
+          ),
+          ...frettedNotes.map(
+            (p: Placement, i: number): FingerAssignment => [
+              p[0],
+              p[1],
+              perm[i] as Finger,
+            ],
+          ),
+        ]);
+      }
+    }
+  }
+
+  // console.log(fingerings);
 
   return;
 }
