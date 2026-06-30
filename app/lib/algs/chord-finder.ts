@@ -2,22 +2,6 @@ import { Tuning } from "@/app/lib/tunings";
 import { Enumerator, Pitch } from "@/app/lib/types";
 import { Combination, Permutation } from "js-combinatorics";
 
-export type Chord = {
-  fingering: FingerAssignment[];
-  difficulty: ChordDifficulty;
-};
-
-export type GuitarString = Enumerator<6, []>;
-export type Finger = Enumerator<4, []> | null;
-export type Fret = Enumerator<25, []>;
-export type HandSpan = Exclude<Enumerator<7, []>, Enumerator<1, []>>;
-export type ChordDifficulty = Enumerator<101, []>;
-export type FingerAssignment = {
-  guitarString: GuitarString;
-  fret: Fret;
-  finger: Finger;
-};
-
 export type ChordFinderOptions = {
   tuning: Tuning;
   capo: Fret;
@@ -25,6 +9,23 @@ export type ChordFinderOptions = {
   maxFret: Fret;
   span: HandSpan;
 };
+
+export type Chord = {
+  fingering: FingerAssignment[];
+  difficulty: ChordDifficulty;
+};
+
+export type FingerAssignment = {
+  guitarString: GuitarString;
+  fret: Fret;
+  finger: Finger;
+};
+
+export type ChordDifficulty = Enumerator<101, []>;
+export type GuitarString = Enumerator<6, []>;
+export type Fret = Enumerator<25, []>;
+export type Finger = Enumerator<4, []> | null;
+export type HandSpan = Exclude<Enumerator<7, []>, Enumerator<1, []>>;
 
 type Placement = {
   guitarString: GuitarString;
