@@ -37,6 +37,18 @@ function getTransitionCost(
   const chordACenter = chordCenterCache[cacheKeyA];
   const chordBCenter = chordCenterCache[cacheKeyB];
 
+  /*
+   * The distance cost is calculated such that its result is in range [0, `maxDistanceCost`], and it increases proportionally with the distance between the chord centers. Distances between 0 and 1 are given a cost of 0; distances over 12 are capped at the maximum cost.
+   */
+
+  const maxDistanceCost = 50;
+  const distanceScalingFactor = maxDistanceCost / 11;
+
+  let distanceCost: number =
+    Math.abs(chordACenter - chordBCenter) * distanceScalingFactor -
+    distanceScalingFactor;
+  distanceCost = Math.max(0, Math.min(maxDistanceCost, distanceCost));
+
   return 0;
 }
 
