@@ -86,6 +86,14 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   const chords: Chord[][] = [];
 
+  const chordOptions = {
+    tuning: tunings.find((t) => t.value === validatedFormData.data.tuning)!,
+    capo: validatedFormData.data.capo as Fret,
+    minFret: validatedFormData.data["min-fret"] as Fret,
+    maxFret: validatedFormData.data["max-fret"] as Fret,
+    span: validatedFormData.data["hand-span"] as HandSpan,
+  };
+
   let message: string = "";
   const errorCb = (cbMessage: string) => {
     message = cbMessage;
@@ -98,17 +106,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
       ({ pitch }) => pitch as Pitch,
     );
 
-    const chord = chordFinder(
-      slicePitches,
-      {
-        tuning: tunings.find((t) => t.value === validatedFormData.data.tuning)!,
-        capo: validatedFormData.data.capo as Fret,
-        minFret: validatedFormData.data["min-fret"] as Fret,
-        maxFret: validatedFormData.data["max-fret"] as Fret,
-        span: validatedFormData.data["hand-span"] as HandSpan,
-      },
-      errorCb,
-    );
+    const chord = chordFinder(slicePitches, chordOptions, errorCb);
 
     if (message !== "") {
       return { errors: [["Chord Finder", [message]]] };
