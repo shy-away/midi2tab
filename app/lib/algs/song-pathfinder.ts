@@ -41,8 +41,9 @@ function getTransitionCost(
 }
 
 function getCenter(chord: Chord): number {
+  const frettedNotes = chord.fingering.filter((e) => e.finger);
+
   return (
-    chord.fingering.reduce((acc, note) => acc + note.fret, 0) /
-    chord.fingering.length
+    frettedNotes.reduce((acc, note) => acc + note.fret, 0) / frettedNotes.length
   );
 }
