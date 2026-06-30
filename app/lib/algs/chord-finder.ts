@@ -53,11 +53,13 @@ export default function chordFinder(
     for (let guitarString: GuitarString = 0; guitarString < 6; guitarString++) {
       const possibleFret = pitch - (tuning.pitches[guitarString] + capo);
 
-      if (possibleFret >= minFret && possibleFret <= maxFret)
+      if (possibleFret >= minFret && possibleFret <= maxFret) {
         possiblePlacements.push({
           guitarString,
           fret: possibleFret,
         } as Placement);
+        continue; // only one fret per string can play any given pitch
+      }
     }
 
     return possiblePlacements;
