@@ -17,3 +17,32 @@ export function songPathfinder(
 ): Chord[] {
   return [];
 }
+
+const chordCenterCache: { [key: string]: number } = {};
+
+function getTransitionCost(
+  chordA: Chord,
+  chordB: Chord,
+  transitionTime: number,
+): number {
+  const cacheKeyA = JSON.stringify(chordA);
+  const cacheKeyB = JSON.stringify(chordB);
+
+  if (!chordCenterCache[cacheKeyA])
+    chordCenterCache[cacheKeyA] = getCenter(chordA);
+
+  if (!chordCenterCache[cacheKeyB])
+    chordCenterCache[cacheKeyB] = getCenter(chordB);
+
+  const chordACenter = chordCenterCache[cacheKeyA];
+  const chordBCenter = chordCenterCache[cacheKeyB];
+
+  return 0;
+}
+
+function getCenter(chord: Chord): number {
+  return (
+    chord.fingering.reduce((acc, note) => acc + note.fret, 0) /
+    chord.fingering.length
+  );
+}
