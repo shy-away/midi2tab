@@ -26,7 +26,10 @@ export type ChordFinderOptions = {
   span: HandSpan;
 };
 
-type Placement = [GuitarString, Fret];
+type Placement = {
+  guitarString: GuitarString;
+  fret: Fret;
+};
 
 export default function chordFinder(
   pitches: Pitch[],
@@ -42,7 +45,10 @@ export default function chordFinder(
       const possibleFret = pitch - (tuning.pitches[guitarString] + capo);
 
       if (possibleFret >= minFret && possibleFret <= maxFret)
-        possiblePlacements.push([guitarString, possibleFret] as Placement);
+        possiblePlacements.push({
+          guitarString,
+          fret: possibleFret,
+        } as Placement);
     }
 
     return possiblePlacements;
@@ -78,9 +84,9 @@ export default function chordFinder(
         recursiveBacktrack(
           [placement],
           placementsIndex + 1,
-          [placement[0]],
-          placement[1],
-          placement[1],
+          [placement.guitarString],
+          placement.fret,
+          placement.fret,
         );
       }
       return;
@@ -99,17 +105,17 @@ export default function chordFinder(
       // 1. not on used strings
       // 2. within minAvailableFret and maxAvailableFret OR use fret 0 (open)
       if (
-        !currentUsedStrings.includes(placement[0]) &&
-        (placement[1] === 0 ||
-          (placement[1] >= minAvailableFret &&
-            placement[1] <= maxAvailableFret))
+        !currentUsedStrings.includes(placement.guitarString) &&
+        (placement.fret === 0 ||
+          (placement.fret >= minAvailableFret &&
+            placement.fret <= maxAvailableFret))
       ) {
         recursiveBacktrack(
           [...currentCandidates, placement],
           placementsIndex + 1,
-          [...currentUsedStrings, placement[0]],
-          Math.min(currentMinFret, placement[1]) as Fret,
-          Math.max(currentMaxFret, placement[1]) as Fret,
+          [...currentUsedStrings, placement.guitarString],
+          Math.min(currentMinFret, placement.fret) as Fret,
+          Math.max(currentMaxFret, placement.fret) as Fret,
         );
       }
     }
@@ -138,13 +144,13 @@ export default function chordFinder(
     const frettedNotes: Placement[] = [];
 
     voicing.forEach((placement: Placement) => {
-      if (placement[1] === 0) openNotes.push(placement);
+      if (placement.fret === 0) openNotes.push(placement);
       else frettedNotes.push(placement);
     });
 
-    // sort by fret (placement[1]) ascending, breaking ties by string (placement[0]) descending
+    // sort by fret ascending, breaking ties by guitarString descending
     frettedNotes.sort((a: Placement, b: Placement) =>
-      a[1] !== b[1] ? a[1] - b[1] : b[0] - a[0],
+      a.fret !== b.fret ? a.fret - b.fret : b.guitarString - a.guitarString,
     );
 
     const fingerPermutations = getFingerPermutations(frettedNotes.length);
@@ -155,8 +161,8 @@ export default function chordFinder(
       for (let i = 0; i < perm.length - 1; i++) {
         const currentFinger = perm[i];
         const nextFinger = perm[i + 1];
-        const currentNoteFret = frettedNotes[i][1];
-        const nextNoteFret = frettedNotes[i + 1][1];
+        const currentNoteFret = frettedNotes[i].fret;
+        const nextNoteFret = frettedNotes[i + 1].fret;
 
         // if next note is on a higher fret, next finger must be greater than current AND must be valid given fret distance
         if (nextNoteFret > currentNoteFret) {
@@ -179,14 +185,21 @@ export default function chordFinder(
       if (isValidPerm) {
         fingerings.push([
           ...openNotes.map(
-            (p: Placement): FingerAssignment => [p[0], p[1], null],
+            ({ guitarString, fret }: Placement): FingerAssignment => {
+              return { guitarString, fret, finger: null };
+            },
           ),
           ...frettedNotes.map(
-            (p: Placement, i: number): FingerAssignment => [
-              p[0],
-              p[1],
-              perm[i] as Finger,
-            ],
+            (
+              { guitarString, fret }: Placement,
+              i: number,
+            ): FingerAssignment => {
+              return {
+                guitarString,
+                fret,
+                finger: perm[i] as Finger,
+              };
+            },
           ),
         ]);
       }
@@ -199,7 +212,7 @@ export default function chordFinder(
     return { fingering, difficulty: getFingeringDifficulty(fingering) };
   });
 
-  // console.log(JSON.stringify(chords, undefined, 2));
+  console.log(JSON.stringify(chords, undefined, 2));
 
   return chords;
 }
