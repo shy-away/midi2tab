@@ -1,7 +1,13 @@
 "use server";
 
-import slicer, { SlicerInputNote } from "@/app/lib/midi/slicer";
+import chordFinder, {
+  Chord,
+  Fret,
+  HandSpan,
+} from "@/app/lib/algs/chord-finder";
+import slicer, { Slice, SlicerInputNote } from "@/app/lib/algs/slicer";
 import { Tuning, tunings } from "@/app/lib/tunings";
+import { Pitch } from "@/app/lib/types";
 import { Midi } from "@tonejs/midi";
 import { Note } from "@tonejs/midi/dist/Note";
 import z from "zod";
@@ -76,7 +82,40 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     return { errors: [["MIDI Slicer", ["Too many notes at once."]]] };
   }
 
-  // console.log(JSON.stringify(slices, undefined, 2));
+  const chords: Chord[][] = [];
+
+  let message: string = "";
+  const errorCb = (cbMessage: string) => {
+    message = cbMessage;
+  };
+
+  for (let i = 0; i < slices!.length; i++) {
+    const slice: Slice = slices![i];
+
+    const slicePitches: Pitch[] = slice.notes.map(
+      ({ pitch }) => pitch as Pitch,
+    );
+
+    const chord = chordFinder(
+      slicePitches,
+      {
+        tuning: tunings.find((t) => t.value === validatedFormData.data.tuning)!,
+        capo: validatedFormData.data.capo as Fret,
+        minFret: validatedFormData.data["min-fret"] as Fret,
+        maxFret: validatedFormData.data["max-fret"] as Fret,
+        span: validatedFormData.data["hand-span"] as HandSpan,
+      },
+      errorCb,
+    );
+
+    if (message !== "") {
+      return { errors: [["Chord Finder", [message]]] };
+    }
+
+    chords[i] = chord!;
+  }
+
+  // console.log(JSON.stringify(chords, undefined, 2));
 
   /* alphaTex generation */
 
