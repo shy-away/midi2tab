@@ -236,7 +236,7 @@ export default function chordFinder(
     return { fingering, difficulty: getFingeringDifficulty(fingering) };
   });
 
-  console.log(JSON.stringify(chords, undefined, 2));
+  // console.log(JSON.stringify(chords, undefined, 2));
 
   return chords;
 }
