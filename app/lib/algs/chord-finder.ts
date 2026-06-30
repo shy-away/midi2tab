@@ -36,6 +36,15 @@ export default function chordFinder(
   { tuning, capo, minFret, maxFret, span }: ChordFinderOptions,
   errorCb?: (message: string) => void,
 ): Chord[] | undefined {
+  function callErrorCb(message: string) {
+    if (errorCb) errorCb(`${message} ${JSON.stringify(pitches)}`);
+  }
+
+  if (capo > minFret || minFret > maxFret) {
+    callErrorCb("Invalid options.");
+    return;
+  }
+
   /* Placement possibility generation */
 
   const getPossiblePlacements = (pitch: Pitch): Placement[] => {
@@ -57,6 +66,11 @@ export default function chordFinder(
   const placements: Placement[][] = Array(pitches.length).fill(undefined);
   for (let i = 0; i < placements.length; i++) {
     placements[i] = getPossiblePlacements(pitches[i]);
+
+    if (placements[i].length === 0) {
+      callErrorCb(`No valid placements for pitch ${pitches[i]}.`);
+      return;
+    }
   }
 
   // console.log(placements);
@@ -120,6 +134,11 @@ export default function chordFinder(
       }
     }
   })();
+
+  if (voicings.length === 0) {
+    callErrorCb("No valid voicings.");
+    return;
+  }
 
   // console.log(voicings);
 
@@ -204,6 +223,11 @@ export default function chordFinder(
         ]);
       }
     }
+  }
+
+  if (fingerings.length === 0) {
+    callErrorCb("No valid fingerings.");
+    return;
   }
 
   // console.log(fingerings);
