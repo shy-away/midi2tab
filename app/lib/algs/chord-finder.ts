@@ -191,5 +191,66 @@ export default function chordFinder(
 
   // console.log(fingerings);
 
-  return;
+  const chords = fingerings.map((fingering: FingerAssignment[]) => {
+    return { fingering, difficulty: getFingeringDifficulty(fingering) };
+  });
+
+  // console.log(JSON.stringify(chords, undefined, 2));
+
+  return chords;
+}
+
+const fingerDifficultyMap: ChordDifficulty[] = [0, 5, 10, 20, 30];
+const stretchDifficultyMap: ChordDifficulty[] = [0, 5, 10, 25, 40];
+
+function getFingeringDifficulty(
+  fingering: FingerAssignment[],
+): ChordDifficulty {
+  const frettedNotes = fingering.filter((e) => e[2] !== null);
+
+  // early return if there's no fretted notes
+  if (frettedNotes.length === 0) return 0 as ChordDifficulty;
+
+  // sort from least (lowest on the neck) to greatest (highest on the neck)
+  frettedNotes.sort(
+    (a: FingerAssignment, b: FingerAssignment) => a[1]! - b[1]!,
+  );
+
+  // get properties of fingering
+  const numFingers = frettedNotes.length;
+
+  const lowestFret = frettedNotes[0][2]!;
+  const highestFret = frettedNotes.at(-1)![2]!;
+  const stretch = highestFret - lowestFret;
+
+  // get max difficulties for finger count and stretch
+  const maxFingerDifficulty = fingerDifficultyMap.at(-1)!;
+  const maxStretchDifficulty = stretchDifficultyMap.at(-1)!;
+
+  // get finger count and stretch difficulties for current fingering
+  const fingerDifficulty =
+    fingerDifficultyMap[numFingers] ?? maxFingerDifficulty;
+  const stretchDifficulty =
+    stretchDifficultyMap[stretch] ?? maxStretchDifficulty;
+
+  /* Neck penalty */
+  // convert other difficulties to ratios
+  const fdRatio = fingerDifficulty / maxFingerDifficulty;
+  const sdRatio = stretchDifficulty / maxStretchDifficulty;
+
+  // inverse scale neck position difficulty modifier with lowest fret
+  const neckPosModifier = 1.0 - 0.5 * (Math.min(12, lowestFret) - 1);
+
+  // calculate neck penalty
+  const neckPenalty = 30 * ((fdRatio + sdRatio * neckPosModifier) / 2);
+
+  // sum difficulties and round
+  let difficulty = Math.round(
+    fingerDifficulty + stretchDifficulty + neckPenalty,
+  );
+
+  // clamp to range [0, 100] for safety
+  difficulty = Math.min(100, Math.max(0, difficulty));
+
+  return difficulty as ChordDifficulty;
 }
