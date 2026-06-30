@@ -82,6 +82,8 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     return { errors: [["MIDI Slicer", ["Too many notes at once."]]] };
   }
 
+  /* Chord creation */
+
   const chords: Chord[][] = [];
 
   let message: string = "";
