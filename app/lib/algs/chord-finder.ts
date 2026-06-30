@@ -12,7 +12,11 @@ export type Finger = Enumerator<4, []> | null;
 export type Fret = Enumerator<25, []>;
 export type HandSpan = Exclude<Enumerator<7, []>, Enumerator<1, []>>;
 export type ChordDifficulty = Enumerator<101, []>;
-export type FingerAssignment = [GuitarString, Fret, Finger];
+export type FingerAssignment = {
+  guitarString: GuitarString;
+  fret: Fret;
+  finger: Finger;
+};
 
 export type ChordFinderOptions = {
   tuning: Tuning;
@@ -206,21 +210,21 @@ const stretchDifficultyMap: ChordDifficulty[] = [0, 5, 10, 25, 40];
 function getFingeringDifficulty(
   fingering: FingerAssignment[],
 ): ChordDifficulty {
-  const frettedNotes = fingering.filter((e) => e[2] !== null);
+  const frettedNotes = fingering.filter((e) => e.finger !== null);
 
   // early return if there's no fretted notes
   if (frettedNotes.length === 0) return 0 as ChordDifficulty;
 
   // sort from least (lowest on the neck) to greatest (highest on the neck)
   frettedNotes.sort(
-    (a: FingerAssignment, b: FingerAssignment) => a[1]! - b[1]!,
+    (a: FingerAssignment, b: FingerAssignment) => a.fret - b.fret,
   );
 
   // get properties of fingering
   const numFingers = frettedNotes.length;
 
-  const lowestFret = frettedNotes[0][2]!;
-  const highestFret = frettedNotes.at(-1)![2]!;
+  const lowestFret = frettedNotes[0].finger!;
+  const highestFret = frettedNotes.at(-1)!.finger!;
   const stretch = highestFret - lowestFret;
 
   // get max difficulties for finger count and stretch
