@@ -18,7 +18,7 @@ export function songPathfinder(
   function getTransitionCost(
     chordA: Chord,
     chordB: Chord,
-    sliceIndex: number,
+    chordASliceIndex: number,
   ): number {
     const { center: chordACenter, fingerStrings: chordAFingerStrings } =
       fetchChordData(chordA);
@@ -93,7 +93,7 @@ export function songPathfinder(
 
     let holdoverViolationCost: number = 0;
 
-    for (const nextSliceNote of slices[sliceIndex + 1].notes) {
+    for (const nextSliceNote of slices[chordASliceIndex + 1].notes) {
       if (nextSliceNote.holdover) {
         // impose large penalties if chordB changes finger
         // impose HUGE penalties if chordB changes string or fret
@@ -120,7 +120,7 @@ export function songPathfinder(
       }
     }
 
-    const currentSlice = slices[sliceIndex];
+    const currentSlice = slices[chordASliceIndex];
     const transitionTimeScaleFactor =
       baselineTime / (currentSlice.end - currentSlice.start);
 
