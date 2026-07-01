@@ -124,7 +124,10 @@ export function songPathfinder(
     const transitionTimeScaleFactor =
       baselineTime / (currentSlice.end - currentSlice.start);
 
-    return transitionTimeScaleFactor * (distanceCost + fingeringCost + holdoverViolationCost);
+    return (
+      transitionTimeScaleFactor *
+      (distanceCost + fingeringCost + holdoverViolationCost)
+    );
   }
 
   return [];
