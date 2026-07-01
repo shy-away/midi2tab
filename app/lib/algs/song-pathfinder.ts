@@ -15,6 +15,14 @@ export function songPathfinder(
   chords: Chord[][],
   baselineTime: number,
 ): Chord[] {
+  if (
+    slices.length !== chords.length ||
+    slices.length < 1 ||
+    chords[0].length < 1
+  ) {
+    throw Error("Invalid pathfinder parameters.");
+  }
+
   function getTransitionCost(
     chordA: Chord,
     chordB: Chord,
