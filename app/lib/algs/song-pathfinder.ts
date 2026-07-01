@@ -1,4 +1,4 @@
-import { Chord } from "@/app/lib/algs/chord-finder";
+import { Chord, Finger, GuitarString } from "@/app/lib/algs/chord-finder";
 import { Slice } from "@/app/lib/algs/slicer";
 
 /**
@@ -18,7 +18,12 @@ export function songPathfinder(
   return [];
 }
 
-const chordCenterCache: { [key: string]: number | null } = {};
+const cache: {
+  [key: string]: {
+    center: number | null;
+    fingerStrings: { guitarString: GuitarString; finger: Finger }[];
+  };
+} = {};
 
 function getTransitionCost(
   chordA: Chord,
@@ -28,14 +33,24 @@ function getTransitionCost(
   const cacheKeyA = JSON.stringify(chordA);
   const cacheKeyB = JSON.stringify(chordB);
 
-  if (!chordCenterCache[cacheKeyA])
-    chordCenterCache[cacheKeyA] = getCenter(chordA);
+  if (!cache[cacheKeyA])
+    cache[cacheKeyA] = {
+      center: getCenter(chordA),
+      fingerStrings: chordA.fingering.map(({ guitarString, finger }) => {
+        return { guitarString, finger };
+      }),
+    };
 
-  if (!chordCenterCache[cacheKeyB])
-    chordCenterCache[cacheKeyB] = getCenter(chordB);
+  if (!cache[cacheKeyB])
+    cache[cacheKeyB] = {
+      center: getCenter(chordB),
+      fingerStrings: chordB.fingering.map(({ guitarString, finger }) => {
+        return { guitarString, finger };
+      }),
+    };
 
-  const chordACenter = chordCenterCache[cacheKeyA];
-  const chordBCenter = chordCenterCache[cacheKeyB];
+  const chordACenter = cache[cacheKeyA].center;
+  const chordBCenter = cache[cacheKeyB].center;
 
   /*
    * The distance cost is calculated such that its result is in range [0, `maxDistanceCost`], and it increases proportionally with the distance between the chord centers. Distances between 0 and 1 are given a cost of 0; distances over 12 are capped at the maximum cost.
