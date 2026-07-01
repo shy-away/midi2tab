@@ -18,7 +18,7 @@ export function songPathfinder(
   function getTransitionCost(
     chordA: Chord,
     chordB: Chord,
-    transitionTime: number,
+    sliceIndex: number,
   ): number {
     const { center: chordACenter, fingerStrings: chordAFingerStrings } =
       fetchChordData(chordA);
@@ -87,6 +87,35 @@ export function songPathfinder(
             .guitarString
         ) {
           fingeringCost += maxFingeringCostPerFinger;
+        }
+      }
+    }
+
+    let holdoverViolationCost: number = 0;
+
+    for (const nextSliceNote of slices[sliceIndex + 1].notes) {
+      if (nextSliceNote.holdover) {
+        // impose large penalties if chordB changes finger
+        // impose HUGE penalties if chordB changes string or fret
+
+        const chordAHeldNote = chordA.fingering.find(
+          ({ pitch }) => pitch === nextSliceNote.pitch,
+        )!;
+
+        const chordBHeldNote = chordB.fingering.find(
+          ({ pitch }) => pitch === nextSliceNote.pitch,
+        )!;
+
+        if (chordAHeldNote.fret !== chordBHeldNote.fret) {
+          holdoverViolationCost += 1000;
+        }
+
+        if (chordAHeldNote.guitarString !== chordBHeldNote.guitarString) {
+          holdoverViolationCost += 1000;
+        }
+
+        if (chordAHeldNote.finger !== chordBHeldNote.finger) {
+          holdoverViolationCost += 200;
         }
       }
     }
