@@ -120,6 +120,10 @@ export function songPathfinder(
       }
     }
 
+    const currentSlice = slices[sliceIndex];
+    const transitionTimeScaleFactor =
+      baselineTime / (currentSlice.end - currentSlice.start);
+
     return 0;
   }
 
