@@ -19,6 +19,7 @@ export type FingerAssignment = {
   guitarString: GuitarString;
   fret: Fret;
   finger: Finger;
+  pitch: Pitch;
 };
 
 export type ChordDifficulty = Enumerator<101, []>;
@@ -30,6 +31,7 @@ export type HandSpan = Exclude<Enumerator<7, []>, Enumerator<1, []>>;
 type Placement = {
   guitarString: GuitarString;
   fret: Fret;
+  pitch: Pitch;
 };
 
 export default function chordFinder(
@@ -58,6 +60,7 @@ export default function chordFinder(
         possiblePlacements.push({
           guitarString,
           fret: possibleFret,
+          pitch
         } as Placement);
         continue; // only one fret per string can play any given pitch
       }
@@ -207,19 +210,20 @@ export default function chordFinder(
       if (isValidPerm) {
         fingerings.push([
           ...openNotes.map(
-            ({ guitarString, fret }: Placement): FingerAssignment => {
-              return { guitarString, fret, finger: null };
+            ({ guitarString, fret, pitch }: Placement): FingerAssignment => {
+              return { guitarString, fret, finger: null, pitch };
             },
           ),
           ...frettedNotes.map(
             (
-              { guitarString, fret }: Placement,
+              { guitarString, fret, pitch }: Placement,
               i: number,
             ): FingerAssignment => {
               return {
                 guitarString,
                 fret,
                 finger: perm[i] as Finger,
+                pitch
               };
             },
           ),
