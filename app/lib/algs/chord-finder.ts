@@ -60,7 +60,7 @@ export default function chordFinder(
         possiblePlacements.push({
           guitarString,
           fret: possibleFret,
-          pitch
+          pitch,
         } as Placement);
         continue; // only one fret per string can play any given pitch
       }
@@ -223,7 +223,7 @@ export default function chordFinder(
                 guitarString,
                 fret,
                 finger: perm[i] as Finger,
-                pitch
+                pitch,
               };
             },
           ),
