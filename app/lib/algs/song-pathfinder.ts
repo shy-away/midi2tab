@@ -1,6 +1,12 @@
 import { Chord, Finger, GuitarString } from "@/app/lib/algs/chord-finder";
 import { Slice } from "@/app/lib/algs/slicer";
 
+type TrellisNode = {
+  totalCostToReach: number;
+  chord: Chord;
+  backpointer: TrellisNode | null;
+};
+
 /**
  * Determine the optimal path through the given array of chord options.
  *
@@ -138,7 +144,72 @@ export function songPathfinder(
     );
   }
 
-  return [];
+  const trellis: TrellisNode[][] = Array(chords.length)
+    .fill(undefined)
+    .map(() => []);
+
+  // initial difficulties
+  const initialChords = chords[0];
+  trellis[0] = new Array(initialChords.length).fill(undefined);
+  for (let i = 0; i < initialChords.length; i++) {
+    trellis[0][i] = {
+      totalCostToReach: initialChords[i].difficulty,
+      chord: initialChords[i],
+      backpointer: null,
+    };
+  }
+
+  // Viterbi algorithm
+  for (let i = 1; i < slices.length; i++) {
+    for (let j = 0; j < chords[i].length; j++) {
+      const currentChord = chords[i][j];
+
+      let winnerTransitionCost = Number.MAX_SAFE_INTEGER;
+      let winnerChordIndex = 0;
+
+      for (let k = 0; k < chords[i - 1].length; k++) {
+        const prevChord = chords[i - 1][k];
+        const transitionCost = getTransitionCost(
+          prevChord,
+          currentChord,
+          i - 1,
+        );
+
+        if (transitionCost < winnerTransitionCost) {
+          winnerTransitionCost = transitionCost;
+          winnerChordIndex = k;
+        }
+      }
+
+      trellis[i][j] = {
+        chord: currentChord,
+        backpointer: trellis[i - 1][winnerChordIndex],
+        totalCostToReach:
+          trellis[i - 1][winnerChordIndex].totalCostToReach +
+          winnerTransitionCost +
+          currentChord.difficulty,
+      };
+    }
+  }
+
+  // find best result and backtrack
+  let tn: TrellisNode | null = null;
+  let winnerTrellisNodeCost = Number.MAX_SAFE_INTEGER;
+  for (const lastTrellisNode of trellis.at(-1)!) {
+    if (lastTrellisNode.totalCostToReach < winnerTrellisNodeCost) {
+      winnerTrellisNodeCost = lastTrellisNode.totalCostToReach;
+      tn = lastTrellisNode;
+    }
+  }
+
+  const path: Chord[] = [];
+
+  while (tn !== null) {
+    path.push(tn.chord);
+    tn = tn.backpointer;
+  }
+
+  return path.toReversed();
 }
 
 const cache: {
