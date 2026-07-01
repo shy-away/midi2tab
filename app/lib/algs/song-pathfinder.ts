@@ -18,7 +18,7 @@ export function songPathfinder(
   return [];
 }
 
-const chordCenterCache: { [key: string]: number } = {};
+const chordCenterCache: { [key: string]: number | null } = {};
 
 function getTransitionCost(
   chordA: Chord,
@@ -44,16 +44,24 @@ function getTransitionCost(
   const maxDistanceCost = 50;
   const distanceScalingFactor = maxDistanceCost / 11;
 
-  let distanceCost: number =
-    Math.abs(chordACenter - chordBCenter) * distanceScalingFactor -
-    distanceScalingFactor;
-  distanceCost = Math.max(0, Math.min(maxDistanceCost, distanceCost));
+  let distanceCost: number;
+
+  if (!chordACenter || !chordBCenter) {
+    distanceCost = 0;
+  } else {
+    distanceCost =
+      Math.abs(chordACenter - chordBCenter) * distanceScalingFactor -
+      distanceScalingFactor;
+    distanceCost = Math.max(0, Math.min(maxDistanceCost, distanceCost));
+  }
 
   return 0;
 }
 
-function getCenter(chord: Chord): number {
-  const frettedNotes = chord.fingering.filter((e) => e.finger);
+function getCenter(chord: Chord): number | null {
+  const frettedNotes = chord.fingering.filter((e) => e.finger !== null);
+
+  if (frettedNotes.length === 0) return null;
 
   return (
     frettedNotes.reduce((acc, note) => acc + note.fret, 0) / frettedNotes.length
