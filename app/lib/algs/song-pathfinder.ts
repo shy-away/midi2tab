@@ -25,32 +25,30 @@ const cache: {
   };
 } = {};
 
+function fetchChordData(chord: Chord) {
+  const cacheKey = JSON.stringify(chord);
+
+  if (!cache[cacheKey])
+    cache[cacheKey] = {
+      center: getCenter(chord),
+      fingerStrings: chord.fingering.map(({ guitarString, finger }) => {
+        return { guitarString, finger };
+      }),
+    };
+
+  return cache[cacheKey];
+}
+
 function getTransitionCost(
   chordA: Chord,
   chordB: Chord,
   transitionTime: number,
 ): number {
-  const cacheKeyA = JSON.stringify(chordA);
-  const cacheKeyB = JSON.stringify(chordB);
+  const { center: chordACenter, fingerStrings: chordAFingerStrings } =
+    fetchChordData(chordA);
 
-  if (!cache[cacheKeyA])
-    cache[cacheKeyA] = {
-      center: getCenter(chordA),
-      fingerStrings: chordA.fingering.map(({ guitarString, finger }) => {
-        return { guitarString, finger };
-      }),
-    };
-
-  if (!cache[cacheKeyB])
-    cache[cacheKeyB] = {
-      center: getCenter(chordB),
-      fingerStrings: chordB.fingering.map(({ guitarString, finger }) => {
-        return { guitarString, finger };
-      }),
-    };
-
-  const chordACenter = cache[cacheKeyA].center;
-  const chordBCenter = cache[cacheKeyB].center;
+  const { center: chordBCenter, fingerStrings: chordBFingerStrings } =
+    fetchChordData(chordB);
 
   /*
    * The distance cost is calculated such that its result is in range [0, `maxDistanceCost`], and it increases proportionally with the distance between the chord centers. Distances between 0 and 1 are given a cost of 0; distances over 12 are capped at the maximum cost.
