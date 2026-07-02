@@ -6,6 +6,7 @@ import chordFinder, {
   HandSpan,
 } from "@/app/lib/algs/chord-finder";
 import slicer, { Slice, SlicerInputNote } from "@/app/lib/algs/slicer";
+import { songPathfinder } from "@/app/lib/algs/song-pathfinder";
 import { Tuning, tunings } from "@/app/lib/tunings";
 import { Pitch } from "@/app/lib/types";
 import { Midi } from "@tonejs/midi";
@@ -116,6 +117,12 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   }
 
   // console.log(JSON.stringify(chords, undefined, 2));
+
+  /* Pathfinding */
+
+  const song = songPathfinder(slices!, chords, midi.header.ppq);
+
+  // console.log(JSON.stringify(song, undefined, 2));
 
   /* alphaTex generation */
 
