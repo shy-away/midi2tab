@@ -17,6 +17,9 @@ importers:
       '@deemlol/next-icons':
         specifier: ^0.2.7
         version: 0.2.7(framer-motion@12.40.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+      '@tonaljs/midi':
+        specifier: ^4.10.2
+        version: 4.10.2
       '@tonejs/midi':
         specifier: ^2.0.28
         version: 2.0.28
@@ -1805,6 +1808,15 @@ packages:
         optional: true
       '@types/react-dom':
         optional: true
+
+  '@tonaljs/midi@4.10.2':
+    resolution: {integrity: sha512-MPamXhEwPL7L1udLfYMm3Ft8mLYtHr62Zi2w5zYHM2P7YwIvNoiX0+dvAN5is1Wvq4iVRa8AjFHerjOW/SZhGg==}
+
+  '@tonaljs/pitch-note@6.1.0':
+    resolution: {integrity: sha512-A4OSLo8DjM38u73862LnDmL4YInDDRBmg0fojXcvu4cyU3oOlqndyeHOra1OVoH/WW46uNIxNs1wJDZNPWL5KQ==}
+
+  '@tonaljs/pitch@5.0.2':
+    resolution: {integrity: sha512-mxaXJPPe+LIJdjzpZEl8I8Wx3dEvlzkBbsr2Ltwc2dTAdnErAZ5R0TxVq2egF27lMvQN2QPQPWI9iDPPdVUmrg==}
 
   '@tonejs/midi@2.0.28':
     resolution: {integrity: sha512-RII6YpInPsOZ5t3Si/20QKpNqB1lZ2OCFJSOzJxz38YdY/3zqDr3uaml4JuCWkdixuPqP1/TBnXzhQ39csyoVg==}
@@ -6704,6 +6716,16 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
       '@types/react-dom': 19.2.3(@types/react@19.2.17)
+
+  '@tonaljs/midi@4.10.2':
+    dependencies:
+      '@tonaljs/pitch-note': 6.1.0
+
+  '@tonaljs/pitch-note@6.1.0':
+    dependencies:
+      '@tonaljs/pitch': 5.0.2
+
+  '@tonaljs/pitch@5.0.2': {}
 
   '@tonejs/midi@2.0.28':
     dependencies:
