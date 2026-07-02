@@ -15,7 +15,7 @@ export default function alphatexGenerator(
   slices: Slice[],
   chords: Chord[],
   {
-    title = "Untitled",
+    title,
     tuning,
     capo = 0,
     timeSigTop = 4,
@@ -26,6 +26,7 @@ export default function alphatexGenerator(
 
   /* Metadata */
 
+  if (!title || title === "") title = "Untitled";
   texArr.push(`\\title "${title}"`);
 
   if (tuning !== defaultTuning) {
