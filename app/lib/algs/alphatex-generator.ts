@@ -69,9 +69,7 @@ export default function alphatexGenerator(
       if (validChunkSizes[i] <= remainingPulses) {
         chunkSizes.push(validChunkSizes[i]);
         remainingPulses -= validChunkSizes[i];
-      }
-
-      i++;
+      } else i++;
     }
 
     if (remainingPulses > 0)
