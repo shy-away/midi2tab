@@ -1,5 +1,6 @@
 "use server";
 
+import alphatexGenerator from "@/app/lib/algs/alphatex-generator";
 import chordFinder, {
   Chord,
   Fret,
@@ -126,10 +127,16 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   /* alphaTex generation */
 
-  let fileName = file.name.replace(/\.mid$/, "");
-  if (fileName === "") fileName = "Untitled";
+  const title = file.name.replace(/\.mid$/, "");
 
-  const tex = `\\title ${fileName} :4 3.5 5.5 7.5 3.5`;
+  const tex = alphatexGenerator(slices!, song, {
+    ppq: midi.header.ppq,
+    title,
+    tuning: tunings.find((t) => t.value === validatedFormData.data.tuning)!,
+    capo: validatedFormData.data.capo as Fret,
+    timeSigTop: validatedFormData.data["time-sig-top"],
+    timeSigBottom: validatedFormData.data["time-sig-bottom"],
+  });
 
   return { tex };
 }
