@@ -1,11 +1,12 @@
-import { Chord, Fret } from "@/app/lib/algs/chord-finder";
+import { Chord, Fret, GuitarString } from "@/app/lib/algs/chord-finder";
 import { Slice } from "@/app/lib/algs/slicer";
 import { defaultTuning, Tuning } from "@/app/lib/tunings";
 import { midiToNoteName } from "@tonaljs/midi";
 
 export type alphatexOptions = {
-  title?: string;
+  ppq: number;
   tuning: Tuning;
+  title?: string;
   capo?: Fret;
   timeSigTop?: number;
   timeSigBottom?: number;
@@ -15,6 +16,7 @@ export default function alphatexGenerator(
   slices: Slice[],
   chords: Chord[],
   {
+    ppq,
     title,
     tuning,
     capo = 0,
@@ -42,6 +44,97 @@ export default function alphatexGenerator(
   }
 
   texArr.push(`\\ts ${timeSigTop} ${timeSigBottom}`);
+
+  /* Intermediate chunking */
+
+  const pulsesPerBeat = (ppq * 4) / timeSigBottom;
+  const pulsesPerMeasure = pulsesPerBeat * timeSigTop;
+  let measurePulsesUsed = 0;
+
+  const chunks: {
+    pulses: number;
+    notes: { guitarString: GuitarString; fret: Fret; holdover: boolean }[];
+  }[] = [];
+
+  const validChunkSizes: number[] = [];
+  for (let s = ppq * 4; s >= ppq / 4; s = s / 2) validChunkSizes.push(s);
+
+  function greedyChunker(pulses: number): number[] {
+    const chunkSizes: number[] = [];
+
+    let remainingPulses = pulses;
+    let i = 0;
+
+    while (remainingPulses > 0 && i < validChunkSizes.length) {
+      if (validChunkSizes[i] <= remainingPulses) {
+        chunkSizes.push(validChunkSizes[i]);
+        remainingPulses -= validChunkSizes[i];
+      }
+
+      i++;
+    }
+
+    if (remainingPulses > 0)
+      throw Error(
+        `Invalid chunk size encountered. PPQ: ${ppq}, Remaining pulses: ${remainingPulses}`,
+      );
+
+    return chunkSizes;
+  }
+
+  for (let i = 0; i < slices.length; i++) {
+    const currentChord = chords[i];
+    const currentSlice = slices[i];
+
+    const slicePulses = currentSlice.end - currentSlice.start;
+    let chunkSizes: number[];
+
+    // get chunk sizes, ensuring split over barlines
+    if (slicePulses <= pulsesPerMeasure - measurePulsesUsed) {
+      chunkSizes = greedyChunker(slicePulses);
+    } else {
+      const pulseOverflow = measurePulsesUsed + slicePulses - pulsesPerMeasure;
+      chunkSizes = [
+        ...greedyChunker(slicePulses - pulseOverflow),
+        ...greedyChunker(pulseOverflow),
+      ];
+    }
+
+    // update progress through current measure
+    measurePulsesUsed = (measurePulsesUsed + slicePulses) % pulsesPerMeasure;
+
+    // create chunks
+    for (let j = 0; j < chunkSizes.length; j++) {
+      // on first chunk, search for holdovers
+      if (j === 0) {
+        chunks.push({
+          pulses: chunkSizes[j],
+          notes: currentChord.fingering.map(
+            ({ guitarString, fret, pitch }) => ({
+              guitarString,
+              fret,
+              holdover: currentSlice.notes.find(({ pitch: p }) => p === pitch)!
+                .holdover,
+            }),
+          ),
+        });
+      }
+
+      // on subsequent chunks, all notes are holdovers
+      else {
+        chunks.push({
+          pulses: chunkSizes[j],
+          notes: currentChord.fingering.map(({ guitarString, fret }) => ({
+            guitarString,
+            fret,
+            holdover: true,
+          })),
+        });
+      }
+    }
+  }
+
+  // console.log(JSON.stringify(chunks, undefined, 2));
 
   // texArr.push(":4 3.5 5.5 7.5 3.5");
 
