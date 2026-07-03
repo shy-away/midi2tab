@@ -74,7 +74,10 @@ export default function alphatexGenerator(
 
     if (remainingPulses > 0)
       throw Error(
-        `Invalid chunk size encountered. PPQ: ${ppq}, Remaining pulses: ${remainingPulses}`,
+        `Invalid chunk size encountered.
+        PPQ: ${ppq}
+        Initial chunk size: ${pulses}
+        Remaining pulses: ${remainingPulses}`,
       );
 
     return chunkSizes;
