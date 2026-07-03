@@ -136,7 +136,36 @@ export default function alphatexGenerator(
 
   // console.log(JSON.stringify(chunks, undefined, 2));
 
-  // texArr.push(":4 3.5 5.5 7.5 3.5");
+  /* alphaTex generation */
+
+  measurePulsesUsed = 0;
+
+  for (let i = 0; i < chunks.length; i++) {
+    const currentChunk = chunks[i];
+    const texDuration = 4 * (ppq / currentChunk.pulses);
+
+    let texContent: string;
+
+    if (currentChunk.notes.length > 0) {
+      const texNotes = currentChunk.notes.map(
+        ({ guitarString, fret, holdover }) =>
+          `${holdover ? "-" : fret}.${guitarString + 1}`,
+      );
+
+      texContent = `(${texNotes.join(" ")})`;
+    } else {
+      texContent = "r";
+    }
+
+    texArr.push(`:${texDuration} ${texContent}`);
+
+    measurePulsesUsed += currentChunk.pulses;
+
+    if (measurePulsesUsed === pulsesPerMeasure) {
+      texArr.push("|");
+      measurePulsesUsed = 0;
+    }
+  }
 
   return texArr.join("\n");
 }
