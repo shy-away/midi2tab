@@ -62,16 +62,16 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   /* Slice creation */
 
   const midi = new Midi(await file.arrayBuffer());
-  const notes: SlicerInputNote[] = midi.tracks[0].notes.map(
-    (e: Note): SlicerInputNote => {
+  const notes: SlicerInputNote[] = midi.tracks
+    .flatMap((t) => t.notes)
+    .map((e: Note): SlicerInputNote => {
       const on = e.ticks;
       return {
         pitch: e.midi,
         on,
         off: on + e.durationTicks,
       };
-    },
-  );
+    });
 
   let erred: boolean = false;
 
