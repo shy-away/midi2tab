@@ -78,8 +78,9 @@ export default function slicer(
       const offTime = activePQ.front()!.off;
       processNoteOffs(offTime);
 
-      // if end of slice matches currentNote start, defer processing currentNote to next iteration
-      if (offTime === currentNote.on) i--;
+      // currentNote is at or after offTime, so defer processing currentNote to next iteration
+      i--;
+      continue;
     } else {
       // next event is note-on from currentNote
 
