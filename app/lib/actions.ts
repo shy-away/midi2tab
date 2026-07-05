@@ -59,6 +59,10 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     return { errors: [["MIDI", ["No MIDI uploaded."]]] };
   }
 
+  const tuning = tunings.find(
+    (t) => t.value === validatedFormData.data.tuning,
+  )!;
+
   /* Slice creation */
 
   const midi = new Midi(await file.arrayBuffer());
@@ -88,7 +92,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   const chords: Chord[][] = [];
 
   const chordOptions = {
-    tuning: tunings.find((t) => t.value === validatedFormData.data.tuning)!,
+    tuning,
     capo: validatedFormData.data.capo as Fret,
     minFret: validatedFormData.data["min-fret"] as Fret,
     maxFret: validatedFormData.data["max-fret"] as Fret,
@@ -125,7 +129,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   const tex = alphatexGenerator(slices!, song, {
     ppq: midi.header.ppq,
     title,
-    tuning: tunings.find((t) => t.value === validatedFormData.data.tuning)!,
+    tuning,
     capo: validatedFormData.data.capo as Fret,
     timeSigTop: validatedFormData.data["time-sig-top"],
     timeSigBottom: validatedFormData.data["time-sig-bottom"],
