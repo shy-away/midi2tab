@@ -1,9 +1,4 @@
-import type {
-  Chord,
-  Finger,
-  FingerAssignment,
-  GuitarString,
-} from "./chord-finder";
+import type { Chord, Finger, ChordFinger, GuitarString } from "./chord-finder";
 import type { Slice } from "./slicer";
 import { songPathfinder } from "./song-pathfinder";
 
@@ -24,7 +19,7 @@ function makeChord(
           fret,
           guitarString: guitarString as GuitarString,
           finger: finger as Finger,
-        }) as FingerAssignment,
+        }) as ChordFinger,
     ),
   };
 }

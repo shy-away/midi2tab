@@ -12,11 +12,11 @@ export type ChordFinderOptions = {
 };
 
 export type Chord = {
-  fingering: FingerAssignment[];
+  fingering: ChordFinger[];
   difficulty: ChordDifficulty;
 };
 
-export type FingerAssignment = {
+export type ChordFinger = {
   guitarString: GuitarString;
   fret: Fret;
   finger: Finger;
@@ -168,7 +168,7 @@ export default function chordFinder(
     return fingerPermutations;
   };
 
-  const fingerings: FingerAssignment[][] = [];
+  const fingerings: ChordFinger[][] = [];
 
   for (const voicing of voicings) {
     const openNotes: Placement[] = [];
@@ -221,7 +221,7 @@ export default function chordFinder(
               fret,
               pitch,
               holdover,
-            }: Placement): FingerAssignment => {
+            }: Placement): ChordFinger => {
               return { guitarString, fret, finger: null, pitch, holdover };
             },
           ),
@@ -229,7 +229,7 @@ export default function chordFinder(
             (
               { guitarString, fret, pitch, holdover }: Placement,
               i: number,
-            ): FingerAssignment => {
+            ): ChordFinger => {
               return {
                 guitarString,
                 fret,
@@ -251,7 +251,7 @@ export default function chordFinder(
 
   // console.log(fingerings);
 
-  const chords = fingerings.map((fingering: FingerAssignment[]) => {
+  const chords = fingerings.map((fingering: ChordFinger[]) => {
     return { fingering, difficulty: getFingeringDifficulty(fingering) };
   });
 
@@ -263,18 +263,14 @@ export default function chordFinder(
 const fingerDifficultyMap: ChordDifficulty[] = [0, 5, 10, 20, 30];
 const stretchDifficultyMap: ChordDifficulty[] = [0, 5, 10, 25, 40];
 
-function getFingeringDifficulty(
-  fingering: FingerAssignment[],
-): ChordDifficulty {
+function getFingeringDifficulty(fingering: ChordFinger[]): ChordDifficulty {
   const frettedNotes = fingering.filter((e) => e.finger !== null);
 
   // early return if there's no fretted notes
   if (frettedNotes.length === 0) return 0 as ChordDifficulty;
 
   // sort from least (lowest on the neck) to greatest (highest on the neck)
-  frettedNotes.sort(
-    (a: FingerAssignment, b: FingerAssignment) => a.fret - b.fret,
-  );
+  frettedNotes.sort((a: ChordFinger, b: ChordFinger) => a.fret - b.fret);
 
   // get properties of fingering
   const numFingers = frettedNotes.length;
