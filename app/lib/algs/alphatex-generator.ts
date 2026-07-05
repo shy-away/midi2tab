@@ -33,7 +33,6 @@ export default function alphatexGenerator(
 
   if (tuning !== defaultTuning) {
     const pitches = tuning.pitches
-      .reverse()
       .map((p) => midiToNoteName(p, { sharps: true }));
 
     texArr.push(`\\tuning (${pitches.join(" ")}) { label "${tuning.name}" }`);
