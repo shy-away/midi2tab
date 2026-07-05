@@ -32,3 +32,5 @@ export const tunings: Tuning[] = [
     pitches: [62, 57, 55, 50, 45, 38],
   },
 ];
+
+export const defaultTuning = tunings.find((t) => t.value === "e_standard")!;

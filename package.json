@@ -14,6 +14,7 @@
     "@coderline/alphatab": "^1.8.3",
     "@datastructures-js/priority-queue": "^6.3.5",
     "@deemlol/next-icons": "^0.2.7",
+    "@tonaljs/midi": "^4.10.2",
     "@tonejs/midi": "^2.0.28",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
