@@ -1,3 +1,4 @@
+import { Slice, SliceNote } from "@/app/lib/algs/slicer";
 import { Tuning } from "@/app/lib/tunings";
 import { Enumerator, Pitch } from "@/app/lib/types";
 import { Combination, Permutation } from "js-combinatorics";
@@ -20,6 +21,7 @@ export type FingerAssignment = {
   fret: Fret;
   finger: Finger;
   pitch: Pitch;
+  holdover: boolean;
 };
 
 export type ChordDifficulty = Enumerator<101, []>;
@@ -32,13 +34,16 @@ type Placement = {
   guitarString: GuitarString;
   fret: Fret;
   pitch: Pitch;
+  holdover: boolean;
 };
 
 export default function chordFinder(
-  pitches: Pitch[],
+  slice: Slice,
   { tuning, capo, minFret, maxFret, span }: ChordFinderOptions,
   errorCb?: (message: string) => void,
 ): Chord[] | undefined {
+  const pitches = slice.notes;
+
   function callErrorCb(message: string) {
     if (errorCb) errorCb(`${message} ${JSON.stringify(pitches)}`);
   }
@@ -50,17 +55,18 @@ export default function chordFinder(
 
   /* Placement possibility generation */
 
-  const getPossiblePlacements = (pitch: Pitch): Placement[] => {
+  const getPossiblePlacements = (note: SliceNote): Placement[] => {
     const possiblePlacements: Placement[] = [];
 
     for (let guitarString: GuitarString = 0; guitarString < 6; guitarString++) {
-      const possibleFret = pitch - (tuning.pitches[guitarString] + capo);
+      const possibleFret = note.pitch - (tuning.pitches[guitarString] + capo);
 
       if (possibleFret >= minFret && possibleFret <= maxFret) {
         possiblePlacements.push({
           guitarString,
           fret: possibleFret,
-          pitch,
+          pitch: note.pitch,
+          holdover: note.holdover,
         } as Placement);
         continue; // only one fret per string can play any given pitch
       }
@@ -210,13 +216,18 @@ export default function chordFinder(
       if (isValidPerm) {
         fingerings.push([
           ...openNotes.map(
-            ({ guitarString, fret, pitch }: Placement): FingerAssignment => {
-              return { guitarString, fret, finger: null, pitch };
+            ({
+              guitarString,
+              fret,
+              pitch,
+              holdover,
+            }: Placement): FingerAssignment => {
+              return { guitarString, fret, finger: null, pitch, holdover };
             },
           ),
           ...frettedNotes.map(
             (
-              { guitarString, fret, pitch }: Placement,
+              { guitarString, fret, pitch, holdover }: Placement,
               i: number,
             ): FingerAssignment => {
               return {
@@ -224,6 +235,7 @@ export default function chordFinder(
                 fret,
                 finger: perm[i] as Finger,
                 pitch,
+                holdover,
               };
             },
           ),
