@@ -6,10 +6,9 @@ import chordFinder, {
   Fret,
   HandSpan,
 } from "@/app/lib/algs/chord-finder";
-import slicer, { Slice, SlicerInputNote } from "@/app/lib/algs/slicer";
+import slicer, { SlicerInputNote } from "@/app/lib/algs/slicer";
 import { songPathfinder } from "@/app/lib/algs/song-pathfinder";
 import { Tuning, tunings } from "@/app/lib/tunings";
-import { Pitch } from "@/app/lib/types";
 import { Midi } from "@tonejs/midi";
 import { Note } from "@tonejs/midi/dist/Note";
 import z from "zod";
@@ -102,13 +101,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   };
 
   for (let i = 0; i < slices!.length; i++) {
-    const slice: Slice = slices![i];
-
-    const slicePitches: Pitch[] = slice.notes.map(
-      ({ pitch }) => pitch as Pitch,
-    );
-
-    const chord = chordFinder(slicePitches, chordOptions, errorCb);
+    const chord = chordFinder(slices![i], chordOptions, errorCb);
 
     if (message !== "") {
       return { errors: [["Chord Finder", [message]]] };
