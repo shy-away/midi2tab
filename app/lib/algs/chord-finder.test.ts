@@ -1,5 +1,15 @@
+import { Pitch } from "@/app/lib/types";
 import { tunings } from "../tunings";
 import chordFinder, { ChordFinderOptions } from "./chord-finder";
+import { Slice } from "@/app/lib/algs/slicer";
+
+function makeSlice(pitches: Pitch[]): Slice {
+  return {
+    start: 0,
+    end: 480,
+    notes: pitches.map((pitch) => ({ pitch, holdover: false })),
+  };
+}
 
 describe("Chord finder", () => {
   const defaultOptions: ChordFinderOptions = {
@@ -12,7 +22,11 @@ describe("Chord finder", () => {
 
   it("returns chord options for a valid pitch set", () => {
     const errorCb = jest.fn();
-    const result = chordFinder([60, 64, 67], defaultOptions, errorCb);
+    const result = chordFinder(
+      makeSlice([60, 64, 67]),
+      defaultOptions,
+      errorCb,
+    );
 
     expect(result).toBeDefined();
     expect(result?.length).toBeGreaterThan(0);
@@ -27,7 +41,7 @@ describe("Chord finder", () => {
   it("calls the error callback when the options are invalid", () => {
     const errorCb = jest.fn();
     const result = chordFinder(
-      [60, 64, 67],
+      makeSlice([60, 64, 67]),
       { ...defaultOptions, capo: 2, minFret: 0 },
       errorCb,
     );
@@ -38,7 +52,11 @@ describe("Chord finder", () => {
 
   it("calls the error callback when no valid placements exist", () => {
     const errorCb = jest.fn();
-    const result = chordFinder([60, 61, 62, 63, 64], defaultOptions, errorCb);
+    const result = chordFinder(
+      makeSlice([60, 61, 62, 63, 64]),
+      defaultOptions,
+      errorCb,
+    );
 
     expect(result).toBeUndefined();
     expect(errorCb).toHaveBeenCalled();

@@ -106,16 +106,15 @@ export default function alphatexGenerator(
 
     // create chunks
     for (let j = 0; j < chunkSizes.length; j++) {
-      // on first chunk, search for holdovers
+      // on first chunk, use holdover flags from currentChord
       if (j === 0) {
         chunks.push({
           pulses: chunkSizes[j],
           notes: currentChord.fingering.map(
-            ({ guitarString, fret, pitch }) => ({
+            ({ guitarString, fret, holdover }) => ({
               guitarString,
               fret,
-              holdover: currentSlice.notes.find(({ pitch: p }) => p === pitch)!
-                .holdover,
+              holdover,
             }),
           ),
         });
