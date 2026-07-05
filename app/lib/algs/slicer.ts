@@ -1,3 +1,4 @@
+import { Pitch } from "@/app/lib/types";
 import { PriorityQueue } from "@datastructures-js/priority-queue";
 
 export type SlicerInputNote = {
@@ -18,7 +19,7 @@ export type Slice = {
 };
 
 export type SliceNote = {
-  pitch: number;
+  pitch: Pitch;
   holdover: boolean;
 };
 
@@ -57,8 +58,8 @@ export default function slicer(
     // create new slice from remaining notes
     slices.at(-1)!.end = offTime;
 
-    const remainingNotes = activePQ.toArray().map(({ pitch }) => {
-      return { pitch, holdover: true };
+    const remainingNotes = activePQ.toArray().map(({ pitch: p }): SliceNote => {
+      return { pitch: p as Pitch, holdover: true };
     });
 
     slices.push({
@@ -87,7 +88,10 @@ export default function slicer(
       // case 1: note-on starts at last slice
       if (lastSlice.start === currentNote.on) {
         // add currentNote to last slice
-        lastSlice.notes.push({ pitch: currentNote.pitch, holdover: false });
+        lastSlice.notes.push({
+          pitch: currentNote.pitch as Pitch,
+          holdover: false,
+        });
       }
       // case 2: note-on starts after last slice starts
       else {
@@ -95,10 +99,10 @@ export default function slicer(
 
         // all notes from last slice are held
         const newNotes: SliceNote[] = [
-          ...lastSlice.notes.map(({ pitch }) => {
-            return { pitch, holdover: true };
+          ...lastSlice.notes.map((note) => {
+            return { ...note, holdover: true };
           }),
-          { pitch: currentNote.pitch, holdover: false },
+          { pitch: currentNote.pitch as Pitch, holdover: false },
         ];
 
         slices.push({
