@@ -13,7 +13,7 @@ describe("Slice generator", () => {
     });
 
     it("returns at least one element", () => {
-      expect(slicer(dummyInput)!.length).toBeGreaterThanOrEqual(1);
+      expect(slicer(dummyInput).length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -28,7 +28,7 @@ describe("Slice generator", () => {
     ];
 
     it("returns one slice", () => {
-      expect(slicer(oneNoteInput)!.length).toEqual(1);
+      expect(slicer(oneNoteInput).length).toEqual(1);
     });
 
     it("returns correct slice", () => {
@@ -48,7 +48,7 @@ describe("Slice generator", () => {
     ];
 
     it("returns two slice", () => {
-      expect(slicer(oneNoteInputLeadingRest)!.length).toEqual(2);
+      expect(slicer(oneNoteInputLeadingRest).length).toEqual(2);
     });
 
     it("returns correct slices", () => {
@@ -71,7 +71,7 @@ describe("Slice generator", () => {
     ];
 
     it("creates two slices", () => {
-      expect(slicer(twoNoteInput)!.length).toEqual(2);
+      expect(slicer(twoNoteInput).length).toEqual(2);
     });
 
     it("returns correct slices", () => {
@@ -111,7 +111,7 @@ describe("Slice generator", () => {
     ];
 
     it("creates four slices", () => {
-      expect(slicer(threeNoteInput)!.length).toEqual(4);
+      expect(slicer(threeNoteInput).length).toEqual(4);
     });
 
     it("returns correct slices", () => {
@@ -142,11 +142,8 @@ describe("Slice generator", () => {
       ],
     };
 
-    const mockErrorCb = jest.fn();
-
-    it("should error", () => {
-      slicer(sevenNotesAtOnce, mockErrorCb);
-      expect(mockErrorCb).toHaveBeenCalled();
+    it("should not error", () => {
+      expect(() => slicer(sevenNotesAtOnce)).not.toThrow();
     });
   });
 });
