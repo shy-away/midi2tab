@@ -67,7 +67,7 @@ export default function chordFinder(
     pitches = [];
     let rankedPitchesIndex = rankedPitches.length;
 
-    for (let i = 1; i < 2 ** (rankedPitches.length - 1); i <<= 1) {
+    for (let i = 1; i < 2 ** rankedPitches.length; i <<= 1) {
       rankedPitchesIndex--;
       if ((i & mask) > 0) continue;
       pitches.push(rankedPitches[rankedPitchesIndex]);
