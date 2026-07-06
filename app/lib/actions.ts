@@ -77,15 +77,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
       };
     });
 
-  let erred: boolean = false;
-
-  const slices = slicer({ notes, endTick: midi.durationTicks }, () => {
-    erred = true;
-  });
-
-  if (erred) {
-    return { errors: [["MIDI Slicer", ["Too many notes at once."]]] };
-  }
+  const slices = slicer({ notes, endTick: midi.durationTicks });
 
   /* Chord creation */
 
@@ -104,8 +96,8 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     message = cbMessage;
   };
 
-  for (let i = 0; i < slices!.length; i++) {
-    const chord = chordFinder(slices![i], chordOptions, errorCb);
+  for (let i = 0; i < slices.length; i++) {
+    const chord = chordFinder(slices[i], chordOptions, errorCb);
 
     if (message !== "") {
       return { errors: [["Chord Finder", [message]]] };
@@ -118,7 +110,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   /* Pathfinding */
 
-  const song = songPathfinder(slices!, chords, midi.header.ppq);
+  const song = songPathfinder(slices, chords, midi.header.ppq);
 
   // console.log(JSON.stringify(song, undefined, 2));
 
@@ -126,7 +118,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   const title = file.name.replace(/\.mid$/, "");
 
-  const tex = alphatexGenerator(slices!, song, {
+  const tex = alphatexGenerator(slices, song, {
     ppq: midi.header.ppq,
     title,
     tuning,
