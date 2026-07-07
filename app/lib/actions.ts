@@ -9,6 +9,7 @@ import chordFinder, {
 import slicer, { SlicerInputNote } from "@/app/lib/algs/slicer";
 import { songPathfinder } from "@/app/lib/algs/song-pathfinder";
 import { Tuning, tunings } from "@/app/lib/tunings";
+import { Pitch } from "@/app/lib/types";
 import { Midi } from "@tonejs/midi";
 import { Note } from "@tonejs/midi/dist/Note";
 import z from "zod";
@@ -96,14 +97,19 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     message = cbMessage;
   };
 
-  for (let i = 0; i < slices.length; i++) {
-    const chord = chordFinder(slices[i], chordOptions, errorCb);
+  let unused: Pitch[] = []; // unused pitches (between chordFinder calls)
 
-    if (message !== "") {
+  for (let i = 0; i < slices.length; i++) {
+    const results = chordFinder(slices[i], chordOptions, unused, errorCb);
+
+    if (message !== "" || !results) {
       return { errors: [["Chord Finder", [message]]] };
     }
 
-    chords[i] = chord!;
+    const { chords: foundChords, unusedPitches } = results;
+
+    chords[i] = foundChords;
+    unused = unusedPitches;
   }
 
   // console.log(JSON.stringify(chords, undefined, 2));
