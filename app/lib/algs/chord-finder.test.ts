@@ -25,14 +25,16 @@ describe("Chord finder", () => {
     const result = chordFinder(
       makeSlice([60, 64, 67]),
       defaultOptions,
+      [],
       errorCb,
     );
 
     expect(result).toBeDefined();
-    expect(result?.length).toBeGreaterThan(0);
+    expect(result?.chords.length).toBeGreaterThan(0);
+
     expect(errorCb).not.toHaveBeenCalled();
 
-    for (const chord of result ?? []) {
+    for (const chord of result?.chords ?? []) {
       expect(chord.fingering.length).toBeGreaterThan(0);
       expect(typeof chord.difficulty).toBe("number");
     }
@@ -43,6 +45,7 @@ describe("Chord finder", () => {
     const result = chordFinder(
       makeSlice([60, 64, 67]),
       { ...defaultOptions, capo: 2, minFret: 0 },
+      [],
       errorCb,
     );
 
@@ -50,15 +53,22 @@ describe("Chord finder", () => {
     expect(errorCb).toHaveBeenCalled();
   });
 
-  it("calls the error callback when no valid placements exist", () => {
+  it("excludes notes when no valid placements exist initially, prioritizing highest and lowest notes", () => {
     const errorCb = jest.fn();
     const result = chordFinder(
       makeSlice([60, 61, 62, 63, 64]),
       defaultOptions,
+      [],
       errorCb,
     );
 
-    expect(result).toBeUndefined();
-    expect(errorCb).toHaveBeenCalled();
+    expect(result).toBeDefined();
+    expect(errorCb).not.toHaveBeenCalled();
+
+    for (const chord of result?.chords ?? []) {
+      const pitches = chord.fingering.map(({ pitch }) => pitch);
+      expect(pitches).toContain(60);
+      expect(pitches).toContain(64);
+    }
   });
 });
