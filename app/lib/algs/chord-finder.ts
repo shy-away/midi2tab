@@ -41,9 +41,19 @@ type Placement = {
 export default function chordFinder(
   slice: Slice,
   { tuning, capo, minFret, maxFret, span }: ChordFinderOptions,
+  excludePitches: Pitch[] = [],
   errorCb?: (message: string) => void,
-): Chord[] | undefined {
-  const basePitches = slice.notes;
+): { chords: Chord[]; unusedPitches: Pitch[] } | undefined {
+  const baseUnusedPitches: Pitch[] = [];
+
+  const basePitches = slice.notes.filter(({ pitch }) => {
+    if (excludePitches.includes(pitch)) {
+      baseUnusedPitches.push(pitch);
+      return false;
+    } else {
+      return true;
+    }
+  });
 
   function callErrorCb(message: string) {
     if (errorCb) errorCb(`${message} ${JSON.stringify(basePitches)}`);
@@ -54,26 +64,36 @@ export default function chordFinder(
     return;
   }
 
-  const voicings: Placement[][] = [];
+  let voicings: Placement[][] = [];
   const fingerings: ChordFinger[][] = [];
 
   let pitches = basePitches.slice();
+  let unusedPitches: Pitch[] = [];
 
   const rankedPitches = ranker(basePitches);
 
   let mask = 1;
 
   const nextPitches = () => {
+    voicings = [];
+
     pitches = [];
-    let rankedPitchesIndex = rankedPitches.length;
+    unusedPitches = [...baseUnusedPitches];
+
+    let rankedPitchesIndex = rankedPitches.length - 1;
 
     for (let i = 1; i < 2 ** rankedPitches.length; i <<= 1) {
+      if ((i & mask) > 0) {
+        unusedPitches.push(rankedPitches[rankedPitchesIndex].pitch);
+      } else {
+        pitches.push(rankedPitches[rankedPitchesIndex]);
+      }
+
       rankedPitchesIndex--;
-      if ((i & mask) > 0) continue;
-      pitches.push(rankedPitches[rankedPitchesIndex]);
     }
 
     // console.log(JSON.stringify(pitches, undefined, 2));
+    // console.log(JSON.stringify(unusedPitches, undefined, 2));
 
     mask++;
   };
@@ -284,7 +304,7 @@ export default function chordFinder(
 
   // console.log(JSON.stringify(chords, undefined, 2));
 
-  return chords;
+  return { chords, unusedPitches };
 }
 
 const fingerDifficultyMap: ChordDifficulty[] = [0, 5, 10, 20, 30];
