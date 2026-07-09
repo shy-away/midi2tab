@@ -179,11 +179,13 @@ export function songPathfinder(
         }
       }
 
+      const winnerTrellisNode = trellis[i - 1][winnerChordIndex];
+
       trellis[i][j] = {
         chord: currentChord,
-        backpointer: trellis[i - 1][winnerChordIndex],
+        backpointer: winnerTrellisNode,
         totalCostToReach:
-          trellis[i - 1][winnerChordIndex].totalCostToReach +
+          winnerTrellisNode.totalCostToReach +
           winnerTransitionCost +
           currentChord.difficulty,
       };
