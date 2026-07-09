@@ -24,10 +24,7 @@ export type SliceNote = {
   holdover: boolean;
 };
 
-export default function slicer({
-  endTick,
-  notes,
-}: SlicerInput): Slice[] {
+export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
   const slices: Slice[] = [{ notes: [], start: 0, end: endTick }];
 
   if (notes.length === 0) {
