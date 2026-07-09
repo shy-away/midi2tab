@@ -78,6 +78,23 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
       };
     });
 
+  /* Filter overlapping notes */
+
+  // sort by pitch ascending, breaking ties by note-on ascending
+  notes.sort((a, b) => (a.pitch !== b.pitch ? a.pitch - b.pitch : a.on - b.on));
+
+  for (let i = 1; i < notes.length; i++) {
+    const currentNote = notes[i];
+    const prevNote = notes[i - 1];
+
+    // disregard different pitches or non-overlapping notes
+    if (currentNote.pitch !== prevNote.pitch || currentNote.on >= prevNote.off)
+      continue;
+
+    // remove latter note
+    notes.splice(i--, 1);
+  }
+
   const slices = slicer({ notes, endTick: midi.durationTicks });
 
   /* Chord creation */
