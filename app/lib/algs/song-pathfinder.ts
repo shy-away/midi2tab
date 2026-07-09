@@ -207,7 +207,36 @@ export function songPathfinder(
     tn = tn.backpointer;
   }
 
-  return path.toReversed();
+  path.reverse();
+
+  // Holdover sanitization
+  for (let i = 1; i < path.length; i++) {
+    const currentChord = path[i];
+    const prevChord = path[i - 1];
+
+    for (let j = 0; j < currentChord.fingering.length; j++) {
+      const currentChordFingering = currentChord.fingering[j];
+
+      // only sanitize fingerings where `holdover` is true
+      if (!currentChordFingering.holdover) continue;
+
+      const prevChordMatchFingering = prevChord.fingering.find(
+        ({ pitch }) => pitch === currentChordFingering.pitch,
+      );
+
+      // drop notes from currentChord if their precedent fingerings are not in the same guitar position
+      if (
+        !prevChordMatchFingering ||
+        prevChordMatchFingering.fret !== currentChordFingering.fret ||
+        prevChordMatchFingering.guitarString !==
+          currentChordFingering.guitarString
+      ) {
+        currentChord.fingering.splice(j--, 1);
+      }
+    }
+  }
+
+  return path;
 }
 
 const cache: {
