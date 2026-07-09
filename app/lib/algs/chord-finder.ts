@@ -41,19 +41,13 @@ type Placement = {
 export default function chordFinder(
   slice: Slice,
   { tuning, capo, minFret, maxFret, span }: ChordFinderOptions,
-  excludePitches: Pitch[] = [],
+  prevPitches: Pitch[] = [],
   errorCb?: (message: string) => void,
-): { chords: Chord[]; unusedPitches: Pitch[] } | undefined {
-  const baseUnusedPitches: Pitch[] = [];
-
-  const basePitches = slice.notes.filter(({ pitch }) => {
-    if (excludePitches.includes(pitch)) {
-      baseUnusedPitches.push(pitch);
-      return false;
-    } else {
-      return true;
-    }
-  });
+): { chords: Chord[]; usedPitches: Pitch[] } | undefined {
+  // All held notes of current chord must have predecessor in previous chord
+  const basePitches = slice.notes.filter(({ pitch, holdover }) =>
+    !holdover ? true : prevPitches.includes(pitch),
+  );
 
   function callErrorCb(message: string) {
     if (errorCb) errorCb(`${message} ${JSON.stringify(basePitches)}`);
@@ -68,7 +62,6 @@ export default function chordFinder(
   const fingerings: ChordFinger[][] = [];
 
   let pitches = basePitches.slice();
-  let unusedPitches: Pitch[] = [];
 
   const rankedPitches = ranker(basePitches);
 
@@ -78,14 +71,11 @@ export default function chordFinder(
     voicings = [];
 
     pitches = [];
-    unusedPitches = [...baseUnusedPitches];
 
     let rankedPitchesIndex = rankedPitches.length - 1;
 
     for (let i = 1; i < 2 ** rankedPitches.length; i <<= 1) {
-      if ((i & mask) > 0) {
-        unusedPitches.push(rankedPitches[rankedPitchesIndex].pitch);
-      } else {
+      if ((i & mask) === 0) {
         pitches.push(rankedPitches[rankedPitchesIndex]);
       }
 
@@ -304,7 +294,7 @@ export default function chordFinder(
 
   // console.log(JSON.stringify(chords, undefined, 2));
 
-  return { chords, unusedPitches };
+  return { chords, usedPitches: pitches.map(({ pitch }) => pitch) };
 }
 
 const fingerDifficultyMap: ChordDifficulty[] = [0, 5, 10, 20, 30];

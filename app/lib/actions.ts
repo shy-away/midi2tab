@@ -97,19 +97,19 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     message = cbMessage;
   };
 
-  let unused: Pitch[] = []; // unused pitches (between chordFinder calls)
+  let prevUsed: Pitch[] = []; // used pitches (between chordFinder calls)
 
   for (let i = 0; i < slices.length; i++) {
-    const results = chordFinder(slices[i], chordOptions, unused, errorCb);
+    const results = chordFinder(slices[i], chordOptions, prevUsed, errorCb);
 
     if (message !== "" || !results) {
       return { errors: [["Chord Finder", [message]]] };
     }
 
-    const { chords: foundChords, unusedPitches } = results;
+    const { chords: foundChords, usedPitches } = results;
 
     chords[i] = foundChords;
-    unused = unusedPitches;
+    prevUsed = usedPitches;
   }
 
   // console.log(JSON.stringify(chords, undefined, 2));
