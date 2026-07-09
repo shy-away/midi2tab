@@ -107,18 +107,16 @@ export function songPathfinder(
 
     let holdoverViolationCost: number = 0;
 
-    for (const nextSliceNote of slices[chordASliceIndex + 1].notes) {
-      if (nextSliceNote.holdover) {
+    for (const nextChordNote of chordB.fingering) {
+      if (nextChordNote.holdover) {
         // impose large penalties if chordB changes finger
         // impose HUGE penalties if chordB changes string or fret
 
         const chordAHeldNote = chordA.fingering.find(
-          ({ pitch }) => pitch === nextSliceNote.pitch,
+          ({ pitch }) => pitch === nextChordNote.pitch,
         )!;
 
-        const chordBHeldNote = chordB.fingering.find(
-          ({ pitch }) => pitch === nextSliceNote.pitch,
-        )!;
+        const chordBHeldNote = nextChordNote;
 
         if (chordAHeldNote.fret !== chordBHeldNote.fret) {
           holdoverViolationCost += 1000;
