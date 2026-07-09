@@ -312,8 +312,8 @@ function getFingeringDifficulty(fingering: ChordFinger[]): ChordDifficulty {
   // get properties of fingering
   const numFingers = frettedNotes.length;
 
-  const lowestFret = frettedNotes[0].finger!;
-  const highestFret = frettedNotes.at(-1)!.finger!;
+  const lowestFret = frettedNotes[0].fret;
+  const highestFret = frettedNotes.at(-1)!.fret;
   const stretch = highestFret - lowestFret;
 
   // get max difficulties for finger count and stretch
