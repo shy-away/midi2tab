@@ -9,6 +9,7 @@ import chordFinder, {
 import slicer, { SlicerInputNote } from "@/app/lib/algs/slicer";
 import { songPathfinder } from "@/app/lib/algs/song-pathfinder";
 import { Tuning, tunings } from "@/app/lib/tunings";
+import { Pitch } from "@/app/lib/types";
 import { Midi } from "@tonejs/midi";
 import { Note } from "@tonejs/midi/dist/Note";
 import z from "zod";
@@ -77,6 +78,23 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
       };
     });
 
+  /* Filter overlapping notes */
+
+  // sort by pitch ascending, breaking ties by note-on ascending
+  notes.sort((a, b) => (a.pitch !== b.pitch ? a.pitch - b.pitch : a.on - b.on));
+
+  for (let i = 1; i < notes.length; i++) {
+    const currentNote = notes[i];
+    const prevNote = notes[i - 1];
+
+    // disregard different pitches or non-overlapping notes
+    if (currentNote.pitch !== prevNote.pitch || currentNote.on >= prevNote.off)
+      continue;
+
+    // remove latter note
+    notes.splice(i--, 1);
+  }
+
   const slices = slicer({ notes, endTick: midi.durationTicks });
 
   /* Chord creation */
@@ -96,14 +114,19 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     message = cbMessage;
   };
 
-  for (let i = 0; i < slices.length; i++) {
-    const chord = chordFinder(slices[i], chordOptions, errorCb);
+  let prevUsed: Pitch[] = []; // used pitches (between chordFinder calls)
 
-    if (message !== "") {
+  for (let i = 0; i < slices.length; i++) {
+    const results = chordFinder(slices[i], chordOptions, prevUsed, errorCb);
+
+    if (message !== "" || !results) {
       return { errors: [["Chord Finder", [message]]] };
     }
 
-    chords[i] = chord!;
+    const { chords: foundChords, usedPitches } = results;
+
+    chords[i] = foundChords;
+    prevUsed = usedPitches;
   }
 
   // console.log(JSON.stringify(chords, undefined, 2));

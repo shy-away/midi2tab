@@ -1,3 +1,4 @@
+import ranker from "@/app/lib/algs/ranker";
 import { Pitch } from "@/app/lib/types";
 import { PriorityQueue } from "@datastructures-js/priority-queue";
 
@@ -23,10 +24,7 @@ export type SliceNote = {
   holdover: boolean;
 };
 
-export default function slicer({
-  endTick,
-  notes,
-}: SlicerInput): Slice[] {
+export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
   const slices: Slice[] = [{ notes: [], start: 0, end: endTick }];
 
   if (notes.length === 0) {
@@ -120,43 +118,7 @@ export default function slicer({
         // re-fetch last slice
         const lastSlice = slices.at(-1)!;
 
-        // fetch and sort notes by pitch descending
-        const activeNotes = lastSlice.notes.toSorted(
-          (a: SliceNote, b: SliceNote) => b.pitch - a.pitch,
-        );
-
-        // list indices alternating highest, lowest, next-highest, etc.
-        const indices = [];
-        let lo = 0;
-        let hi = activeNotes.length - 1;
-        let pushLo: boolean = true;
-
-        while (lo <= hi) {
-          if (pushLo) {
-            indices.push(lo++);
-          } else {
-            indices.push(hi--);
-          }
-
-          pushLo = !pushLo;
-        }
-
-        // filter by holdover
-        const holdovers = [];
-        const nonHoldovers = [];
-
-        for (let j = 0; j < activeNotes.length; j++) {
-          const currentActiveNote = activeNotes[indices[j]];
-
-          if (currentActiveNote.holdover) {
-            holdovers.push(currentActiveNote);
-          } else {
-            nonHoldovers.push(currentActiveNote);
-          }
-        }
-
-        // reconsolidate notes
-        const rankedNotes = [...nonHoldovers, ...holdovers];
+        const rankedNotes = ranker(lastSlice.notes);
 
         // replace notes of last slice with top 6 notes
         lastSlice.notes = rankedNotes.slice(0, 6);

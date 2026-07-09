@@ -107,18 +107,16 @@ export function songPathfinder(
 
     let holdoverViolationCost: number = 0;
 
-    for (const nextSliceNote of slices[chordASliceIndex + 1].notes) {
-      if (nextSliceNote.holdover) {
+    for (const nextChordNote of chordB.fingering) {
+      if (nextChordNote.holdover) {
         // impose large penalties if chordB changes finger
         // impose HUGE penalties if chordB changes string or fret
 
         const chordAHeldNote = chordA.fingering.find(
-          ({ pitch }) => pitch === nextSliceNote.pitch,
+          ({ pitch }) => pitch === nextChordNote.pitch,
         )!;
 
-        const chordBHeldNote = chordB.fingering.find(
-          ({ pitch }) => pitch === nextSliceNote.pitch,
-        )!;
+        const chordBHeldNote = nextChordNote;
 
         if (chordAHeldNote.fret !== chordBHeldNote.fret) {
           holdoverViolationCost += 1000;
@@ -181,11 +179,13 @@ export function songPathfinder(
         }
       }
 
+      const winnerTrellisNode = trellis[i - 1][winnerChordIndex];
+
       trellis[i][j] = {
         chord: currentChord,
-        backpointer: trellis[i - 1][winnerChordIndex],
+        backpointer: winnerTrellisNode,
         totalCostToReach:
-          trellis[i - 1][winnerChordIndex].totalCostToReach +
+          winnerTrellisNode.totalCostToReach +
           winnerTransitionCost +
           currentChord.difficulty,
       };
@@ -209,7 +209,36 @@ export function songPathfinder(
     tn = tn.backpointer;
   }
 
-  return path.toReversed();
+  path.reverse();
+
+  // Holdover sanitization
+  for (let i = 1; i < path.length; i++) {
+    const currentChord = path[i];
+    const prevChord = path[i - 1];
+
+    for (let j = 0; j < currentChord.fingering.length; j++) {
+      const currentChordFingering = currentChord.fingering[j];
+
+      // only sanitize fingerings where `holdover` is true
+      if (!currentChordFingering.holdover) continue;
+
+      const prevChordMatchFingering = prevChord.fingering.find(
+        ({ pitch }) => pitch === currentChordFingering.pitch,
+      );
+
+      // drop notes from currentChord if their precedent fingerings are not in the same guitar position
+      if (
+        !prevChordMatchFingering ||
+        prevChordMatchFingering.fret !== currentChordFingering.fret ||
+        prevChordMatchFingering.guitarString !==
+          currentChordFingering.guitarString
+      ) {
+        currentChord.fingering.splice(j--, 1);
+      }
+    }
+  }
+
+  return path;
 }
 
 const cache: {
