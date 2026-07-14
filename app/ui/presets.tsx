@@ -14,13 +14,14 @@ const defaultFormValues = {
 
 const presetsData: {
   name: string;
-  fileName: string;
   customOptions?: { [key: string]: string };
 }[] = [
   {
     name: "Ode to Joy",
-    fileName: "l-v-beethoven-ode-to-joy.mid",
     customOptions: { "max-fret": "12" },
+  },
+  {
+    name: "Autumn Leaves"
   },
 ];
 
@@ -35,10 +36,12 @@ export default function Presets({
       <div className="flex gap-3">
         {presetsData.map((preset) => {
           const handlePresetClick = async () => {
-            const res = await fetch(`/midi/${preset.fileName}`);
+            const fileName = `${preset.name}.mid`
+
+            const res = await fetch(`/midi/${fileName}`);
             const blob = await res.blob();
 
-            const file = new File([blob], preset.fileName, {
+            const file = new File([blob], fileName, {
               type: blob.type || "audio/midi",
             });
 
