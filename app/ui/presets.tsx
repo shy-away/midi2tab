@@ -1,5 +1,6 @@
 import { defaultTuning } from "@/app/lib/tunings";
 import { Button } from "@/components/ui/button";
+import { startTransition } from "react";
 
 const defaultFormValues = {
   tuning: defaultTuning.value,
@@ -50,7 +51,7 @@ export default function Presets({
 
             data.set("file-upload", file);
 
-            action(data);
+            startTransition(() => action(data));
           };
 
           return (
