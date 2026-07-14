@@ -21,7 +21,7 @@ const presetsData: {
     customOptions: { "max-fret": "12" },
   },
   {
-    name: "Autumn Leaves"
+    name: "Autumn Leaves",
   },
 ];
 
@@ -36,7 +36,7 @@ export default function Presets({
       <div className="flex gap-3">
         {presetsData.map((preset) => {
           const handlePresetClick = async () => {
-            const fileName = `${preset.name}.mid`
+            const fileName = `${preset.name}.mid`;
 
             const res = await fetch(`/midi/${fileName}`);
             const blob = await res.blob();
