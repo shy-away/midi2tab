@@ -3,6 +3,7 @@
 import { convertMidiToTab, State } from "@/app/lib/actions";
 import styles from "@/app/styles/barberpole-bg.module.scss";
 import MidiInput from "@/app/ui/midi-form";
+import Presets from "@/app/ui/presets";
 import { Button } from "@/components/ui/button";
 import { AlphaTabApi } from "@coderline/alphatab";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -50,9 +51,7 @@ export default function Home() {
             <MidiInput action={formAction} />
           </HomepageSection>
           <HomepageSection>
-            {
-              // TODO: add presets
-            }
+            <Presets action={formAction} />
           </HomepageSection>
         </>
       ) : (
