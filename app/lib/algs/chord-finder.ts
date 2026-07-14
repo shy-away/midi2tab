@@ -115,14 +115,21 @@ export default function chordFinder(
       return possiblePlacements;
     };
 
+    let hasNoPlacements: boolean = false;
+
     const placements: Placement[][] = Array(pitches.length).fill(undefined);
     for (let i = 0; i < placements.length; i++) {
       placements[i] = getPossiblePlacements(pitches[i]);
 
       if (placements[i].length === 0) {
-        callErrorCb(`No valid placements for pitch ${pitches[i]}.`);
-        return;
+        hasNoPlacements = true;
+        break;
       }
+    }
+
+    if (hasNoPlacements) {
+      nextPitches();
+      continue;
     }
 
     // console.log(placements);
