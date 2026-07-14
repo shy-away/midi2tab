@@ -32,7 +32,7 @@ export default function Presets({
   return (
     <div className="text-center">
       <h2 className="text-xl">Presets</h2>
-      <div className="flex">
+      <div className="flex gap-3">
         {presetsData.map((preset) => {
           const handlePresetClick = async () => {
             const res = await fetch(`/midi/${preset.fileName}`);
