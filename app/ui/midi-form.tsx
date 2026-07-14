@@ -38,6 +38,7 @@ export default function MidiInput({
   const [timeSigBottom, setTimeSigBottom] = useState<number>(4);
   const [customTimeSigTop, setCustomTimeSigTop] = useState<number>(4);
   const [customTimeSigBottom, setCustomTimeSigBottom] = useState<number>(4);
+  const [transpose, setTranspose] = useState<number>(0);
   const [autoTranspose, setAutoTranspose] = useState<"true" | "false">("false");
 
   function handleCustomTimeSigBottom(value: number) {
@@ -227,6 +228,21 @@ export default function MidiInput({
         </section>
         {/* Transposition */}
         <section className="flex gap-4">
+          {/* Manual transpose */}
+          <section className="max-w-30">
+            <span id="transpose">Transpose</span>
+            <div className="mt-2">
+              <InputWithPlusMinusButtons
+                aria-labelledby="transpose"
+                name="transpose"
+                value={transpose}
+                onChange={setTranspose}
+                minValue={-12}
+                maxValue={12}
+                isDisabled={autoTranspose === "true"}
+              />
+            </div>
+          </section>
           {/* Auto-transpose */}
           <section className="flex flex-col justify-center items-center self-stretch gap-2">
             <span id="auto-transpose">Auto-transpose?</span>
