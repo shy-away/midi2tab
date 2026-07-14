@@ -49,12 +49,8 @@ export default function chordFinder(
     !holdover ? true : prevPitches.includes(pitch),
   );
 
-  function callErrorCb(message: string) {
-    if (errorCb) errorCb(`${message} ${JSON.stringify(basePitches)}`);
-  }
-
   if (capo > minFret || minFret > maxFret) {
-    callErrorCb("Invalid options.");
+    if (errorCb) errorCb("Invalid options.");
     return;
   }
 
