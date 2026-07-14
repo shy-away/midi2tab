@@ -4,7 +4,9 @@ Generate guitar tablature from MIDI.
 
 ## Credits
 
-This project wouldn't have been possible without:
+For MIDI file sources, see [`ATTRIBUTION.md`](ATTRIBUTION.md).
+
+Additionally, this project wouldn't have been possible without:
 
 - [AlphaTab](https://www.alphatab.net/) to display tablature alongside standard musical notation
 - [Steinberg's Bravura fonts](https://github.com/steinbergmedia/bravura) for music notation (used by AlphaTab), generously provided under the SIL Open Font License
