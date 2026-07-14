@@ -234,10 +234,8 @@ export default function MidiInput({
               aria-labelledby="auto-transpose"
               name="auto-transpose"
               value={autoTranspose}
-              onChange={() =>
-                autoTranspose === "true"
-                  ? setAutoTranspose("false")
-                  : setAutoTranspose("true")
+              onCheckedChange={() =>
+                setAutoTranspose((prev) => (prev === "true" ? "false" : "true"))
               }
             />
           </section>
