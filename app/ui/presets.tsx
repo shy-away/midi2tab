@@ -15,7 +15,7 @@ const defaultFormValues = {
 const presetsData: {
   name: string;
   fileName: string;
-  customOptions?: object;
+  customOptions?: { [key: string]: string };
 }[] = [
   {
     name: "Ode to Joy",
