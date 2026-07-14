@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState } from "react";
 
@@ -37,6 +38,7 @@ export default function MidiInput({
   const [timeSigBottom, setTimeSigBottom] = useState<number>(4);
   const [customTimeSigTop, setCustomTimeSigTop] = useState<number>(4);
   const [customTimeSigBottom, setCustomTimeSigBottom] = useState<number>(4);
+  const [autoTranspose, setAutoTranspose] = useState<"true" | "false">("false");
 
   function handleCustomTimeSigBottom(value: number) {
     const updateTimeSigBottomAndReturn = (x: number) => {
@@ -57,7 +59,7 @@ export default function MidiInput({
       </div>
       <div id="midi-input-divier" className="border-2"></div>
       {/* Config options */}
-      <div className="p-3 flex justify-center gap-4 flex-wrap items-start">
+      <div className="p-3 flex justify-center gap-4 flex-wrap items-stretch">
         {/* Tuning */}
         <label htmlFor="tuning" className="min-w-40">
           Tuning
@@ -222,6 +224,23 @@ export default function MidiInput({
               </Popover>
             </ToggleGroupItem>
           </ToggleGroup>
+        </section>
+        {/* Transposition */}
+        <section className="flex gap-4">
+          {/* Auto-transpose */}
+          <section className="flex flex-col justify-center items-center self-stretch gap-2">
+            <span id="auto-transpose">Auto-transpose?</span>
+            <Switch
+              aria-labelledby="auto-transpose"
+              name="auto-transpose"
+              value={autoTranspose}
+              onChange={() =>
+                autoTranspose === "true"
+                  ? setAutoTranspose("false")
+                  : setAutoTranspose("true")
+              }
+            />
+          </section>
         </section>
       </div>
       <div className="pt-4 flex justify-center items-start">
