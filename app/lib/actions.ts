@@ -19,6 +19,7 @@ const maxAllowableHandSpan = 6;
 const allowableTimeSigBottoms = [2, 4, 8, 16];
 
 const ConversionFormDataSchema = z.object({
+  file: z.file({ message: "No MIDI uploaded." }),
   tuning: z.enum(
     tunings.reduce(
       (acc: string[], tuning: Tuning) => [...acc, tuning.value],
@@ -57,10 +58,9 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     return { errors: Object.entries(fieldErrors) };
   }
 
-  const file: File = formData.get("file-upload") as File;
-  if (file.size === 0) {
-    return { errors: [["MIDI", ["No MIDI uploaded."]]] };
-  }
+  const data = validatedFormData.data;
+
+  const file = data.file;
 
   const tuning = tunings.find(
     (t) => t.value === validatedFormData.data.tuning,
@@ -89,12 +89,12 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
       };
     });
 
-  let transposeDistance = validatedFormData.data.transpose;
+  let transposeDistance = data.transpose;
 
-  if (validatedFormData.data["auto-transpose"]) {
+  if (data["auto-transpose"]) {
     // find min and max pitches given settings
-    const minPitch = tuning.pitches[5] + validatedFormData.data.capo;
-    const maxPitch = tuning.pitches[0] + validatedFormData.data["max-fret"];
+    const minPitch = tuning.pitches[5] + data.capo;
+    const maxPitch = tuning.pitches[0] + data["max-fret"];
 
     // does song need transposition down for highest pitch?
     if (hiPitch > maxPitch) {
@@ -136,10 +136,10 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   const chordOptions = {
     tuning,
-    capo: validatedFormData.data.capo as Fret,
-    minFret: validatedFormData.data["min-fret"] as Fret,
-    maxFret: validatedFormData.data["max-fret"] as Fret,
-    span: validatedFormData.data["hand-span"] as HandSpan,
+    capo: data.capo as Fret,
+    minFret: data["min-fret"] as Fret,
+    maxFret: data["max-fret"] as Fret,
+    span: data["hand-span"] as HandSpan,
   };
 
   let message: string = "";
@@ -178,9 +178,9 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     ppq: midi.header.ppq,
     title,
     tuning,
-    capo: validatedFormData.data.capo as Fret,
-    timeSigTop: validatedFormData.data["time-sig-top"],
-    timeSigBottom: validatedFormData.data["time-sig-bottom"],
+    capo: data.capo as Fret,
+    timeSigTop: data["time-sig-top"],
+    timeSigBottom: data["time-sig-bottom"],
   });
 
   return { tex };
