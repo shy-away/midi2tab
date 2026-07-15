@@ -142,7 +142,11 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     notes.splice(i--, 1);
   }
 
-  const slices = slicer({ notes, endTick: midi.durationTicks });
+  const slices = slicer({
+    notes,
+    endTick: midi.durationTicks,
+    maxConcurrentNotes: data["max-notes-per-chord"],
+  });
 
   /* Chord creation */
 
