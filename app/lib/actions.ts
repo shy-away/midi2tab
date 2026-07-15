@@ -44,7 +44,7 @@ const ConversionFormDataSchema = z.object({
   "min-fret": z.coerce.number().nonnegative().lte(maxAllowableFret),
   "max-fret": z.coerce.number().nonnegative().lte(maxAllowableFret),
   "hand-span": z.coerce.number().nonnegative().lte(maxAllowableHandSpan),
-  // "max-notes-per-chord": z.coerce.number().nonnegative().lte(6), // standard guitars cannot play more than 6 notes at once
+  "max-notes-per-chord": z.coerce.number().nonnegative().gte(1).lte(6), // standard guitars cannot play more than 6 notes at once
   "time-sig-top": z.coerce.number().gte(2).lte(12), // BPMs higher than 12 are currently unsupported
   "time-sig-bottom": z.coerce
     .number()
