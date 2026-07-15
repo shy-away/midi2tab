@@ -31,7 +31,7 @@ const ConversionFormDataSchema = z.object({
           "audio/mid",
           "audio/x-midi",
           "application/octet-stream",
-        ].includes(file.type),
+        ].includes(file.type) && file.size > 0,
       { message: "No MIDI uploaded." },
     ),
   tuning: z.enum(
