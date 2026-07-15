@@ -240,7 +240,7 @@ export default function MidiInput({
                 maxValue={12}
                 isDisabled={autoTranspose === "true"}
               />
-            <input type="hidden" name="transpose" value={transpose} />
+              <input type="hidden" name="transpose" value={transpose} />
             </div>
           </section>
           {/* Auto-transpose */}
