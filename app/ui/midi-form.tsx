@@ -248,12 +248,11 @@ export default function MidiInput({
             <span id="auto-transpose">Auto-transpose?</span>
             <Switch
               aria-labelledby="auto-transpose"
-              name="auto-transpose"
-              value={autoTranspose}
               onCheckedChange={() =>
                 setAutoTranspose((prev) => (prev === "true" ? "false" : "true"))
               }
             />
+            <input type="hidden" name="auto-transpose" value={autoTranspose} />
           </section>
         </section>
       </div>
