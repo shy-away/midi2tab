@@ -10,6 +10,8 @@ const defaultFormValues = {
   "hand-span": "4",
   "time-sig-top": "4",
   "time-sig-bottom": "4",
+  transpose: "0",
+  "auto-transpose": "false",
 };
 
 const presetsData: {

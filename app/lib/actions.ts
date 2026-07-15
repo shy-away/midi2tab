@@ -19,6 +19,21 @@ const maxAllowableHandSpan = 6;
 const allowableTimeSigBottoms = [2, 4, 8, 16];
 
 const ConversionFormDataSchema = z.object({
+  // MIDI MIME types: https://mime-type.com/file-extension/mid/
+  "file-upload": z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        [
+          "audio/midi",
+          "application/x-midi",
+          "audio/m",
+          "audio/mid",
+          "audio/x-midi",
+          "application/octet-stream",
+        ].includes(file.type) && file.size > 0,
+      { message: "No MIDI uploaded." },
+    ),
   tuning: z.enum(
     tunings.reduce(
       (acc: string[], tuning: Tuning) => [...acc, tuning.value],
@@ -34,6 +49,8 @@ const ConversionFormDataSchema = z.object({
   "time-sig-bottom": z.coerce
     .number()
     .pipe(z.union(allowableTimeSigBottoms.map((e) => z.literal(e)))),
+  transpose: z.coerce.number().gte(-12).lte(12),
+  "auto-transpose": z.coerce.boolean(),
 });
 
 export type State = {
@@ -55,10 +72,9 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     return { errors: Object.entries(fieldErrors) };
   }
 
-  const file: File = formData.get("file-upload") as File;
-  if (file.size === 0) {
-    return { errors: [["MIDI", ["No MIDI uploaded."]]] };
-  }
+  const data = validatedFormData.data;
+
+  const file = data["file-upload"];
 
   const tuning = tunings.find(
     (t) => t.value === validatedFormData.data.tuning,
@@ -67,16 +83,47 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   /* Slice creation */
 
   const midi = new Midi(await file.arrayBuffer());
+
+  let loPitch = Number.MAX_SAFE_INTEGER;
+  let hiPitch = Number.MIN_SAFE_INTEGER;
+
   const notes: SlicerInputNote[] = midi.tracks
     .flatMap((t) => t.notes)
     .map((e: Note): SlicerInputNote => {
       const on = e.ticks;
+      const pitch = e.midi;
+
+      if (pitch < loPitch) loPitch = pitch;
+      else if (pitch > hiPitch) hiPitch = pitch;
+
       return {
-        pitch: e.midi,
+        pitch,
         on,
         off: on + e.durationTicks,
       };
     });
+
+  let transposeDistance = data.transpose;
+
+  if (data["auto-transpose"]) {
+    // find min and max pitches given settings
+    const minPitch = tuning.pitches[5] + data.capo;
+    const maxPitch = tuning.pitches[0] + data["max-fret"];
+
+    // does song need transposition down for highest pitch?
+    if (hiPitch > maxPitch) {
+      transposeDistance -= hiPitch - maxPitch;
+    }
+
+    // can song be transposed up for lowest pitch (without losing highest pitch)?
+    else if (loPitch < minPitch) {
+      transposeDistance += Math.min(maxPitch - hiPitch, minPitch - loPitch);
+    }
+  }
+
+  notes.forEach((note) => {
+    note.pitch += transposeDistance;
+  });
 
   /* Filter overlapping notes */
 
@@ -103,10 +150,10 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   const chordOptions = {
     tuning,
-    capo: validatedFormData.data.capo as Fret,
-    minFret: validatedFormData.data["min-fret"] as Fret,
-    maxFret: validatedFormData.data["max-fret"] as Fret,
-    span: validatedFormData.data["hand-span"] as HandSpan,
+    capo: data.capo as Fret,
+    minFret: data["min-fret"] as Fret,
+    maxFret: data["max-fret"] as Fret,
+    span: data["hand-span"] as HandSpan,
   };
 
   let message: string = "";
@@ -145,9 +192,9 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
     ppq: midi.header.ppq,
     title,
     tuning,
-    capo: validatedFormData.data.capo as Fret,
-    timeSigTop: validatedFormData.data["time-sig-top"],
-    timeSigBottom: validatedFormData.data["time-sig-bottom"],
+    capo: data.capo as Fret,
+    timeSigTop: data["time-sig-top"],
+    timeSigBottom: data["time-sig-bottom"],
   });
 
   return { tex };
