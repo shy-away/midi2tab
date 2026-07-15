@@ -19,7 +19,21 @@ const maxAllowableHandSpan = 6;
 const allowableTimeSigBottoms = [2, 4, 8, 16];
 
 const ConversionFormDataSchema = z.object({
-  file: z.file({ message: "No MIDI uploaded." }),
+  // MIDI MIME types: https://mime-type.com/file-extension/mid/
+  "file-upload": z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        [
+          "audio/midi",
+          "application/x-midi",
+          "audio/m",
+          "audio/mid",
+          "audio/x-midi",
+          "application/octet-stream",
+        ].includes(file.type),
+      { message: "No MIDI uploaded." },
+    ),
   tuning: z.enum(
     tunings.reduce(
       (acc: string[], tuning: Tuning) => [...acc, tuning.value],
@@ -60,7 +74,7 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
 
   const data = validatedFormData.data;
 
-  const file = data.file;
+  const file = data["file-upload"];
 
   const tuning = tunings.find(
     (t) => t.value === validatedFormData.data.tuning,
