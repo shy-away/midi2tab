@@ -34,6 +34,8 @@ const ConversionFormDataSchema = z.object({
   "time-sig-bottom": z.coerce
     .number()
     .pipe(z.union(allowableTimeSigBottoms.map((e) => z.literal(e)))),
+  transpose: z.coerce.number().gte(-12).lte(12),
+  "auto-transpose": z.coerce.boolean(),
 });
 
 export type State = {
