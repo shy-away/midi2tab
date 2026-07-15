@@ -69,16 +69,47 @@ export async function convertMidiToTab(formData: FormData): Promise<State> {
   /* Slice creation */
 
   const midi = new Midi(await file.arrayBuffer());
+
+  let loPitch = Number.MAX_SAFE_INTEGER;
+  let hiPitch = Number.MIN_SAFE_INTEGER;
+
   const notes: SlicerInputNote[] = midi.tracks
     .flatMap((t) => t.notes)
     .map((e: Note): SlicerInputNote => {
       const on = e.ticks;
+      const pitch = e.midi;
+
+      if (pitch < loPitch) loPitch = pitch;
+      else if (pitch > hiPitch) hiPitch = pitch;
+
       return {
-        pitch: e.midi,
+        pitch,
         on,
         off: on + e.durationTicks,
       };
     });
+
+  let transposeDistance = validatedFormData.data.transpose;
+
+  if (validatedFormData.data["auto-transpose"]) {
+    // find min and max pitches given settings
+    const minPitch = tuning.pitches[5] + validatedFormData.data.capo;
+    const maxPitch = tuning.pitches[0] + validatedFormData.data["max-fret"];
+
+    // does song need transposition down for highest pitch?
+    if (hiPitch > maxPitch) {
+      transposeDistance -= hiPitch - maxPitch;
+    }
+
+    // can song be transposed up for lowest pitch (without losing highest pitch)?
+    else if (loPitch < minPitch) {
+      transposeDistance += Math.min(maxPitch - hiPitch, minPitch - loPitch);
+    }
+  }
+
+  notes.forEach((note) => {
+    note.pitch += transposeDistance;
+  });
 
   /* Filter overlapping notes */
 
