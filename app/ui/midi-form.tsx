@@ -234,13 +234,13 @@ export default function MidiInput({
             <div className="mt-2">
               <InputWithPlusMinusButtons
                 aria-labelledby="transpose"
-                name="transpose"
                 value={transpose}
                 onChange={setTranspose}
                 minValue={-12}
                 maxValue={12}
                 isDisabled={autoTranspose === "true"}
               />
+            <input type="hidden" name="transpose" value={transpose} />
             </div>
           </section>
           {/* Auto-transpose */}
