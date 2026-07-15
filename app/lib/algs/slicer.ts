@@ -11,6 +11,7 @@ export type SlicerInputNote = {
 export type SlicerInput = {
   endTick: number;
   notes: SlicerInputNote[];
+  maxConcurrentNotes?: number;
 };
 
 export type Slice = {
@@ -24,7 +25,11 @@ export type SliceNote = {
   holdover: boolean;
 };
 
-export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
+export default function slicer({
+  endTick,
+  notes,
+  maxConcurrentNotes = 6,
+}: SlicerInput): Slice[] {
   const slices: Slice[] = [{ notes: [], start: 0, end: endTick }];
 
   if (notes.length === 0) {
@@ -35,6 +40,12 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
 
   const activePQ = new PriorityQueue<SlicerInputNote>(
     (a: SlicerInputNote, b: SlicerInputNote) => a.off - b.off,
+  );
+
+  // round and clamp to range [1, 6]
+  const maxActivePQSize = Math.max(
+    1,
+    Math.min(6, Math.round(maxConcurrentNotes)),
   );
 
   /**
@@ -113,15 +124,15 @@ export default function slicer({ endTick, notes }: SlicerInput): Slice[] {
       // always enqueue newly processed currentNote
       activePQ.enqueue(currentNote);
 
-      // rank and filter if more than 6 notes at once
-      if (activePQ.size() > 6) {
+      // rank and filter if activePQ size exceeds limit
+      if (activePQ.size() > maxActivePQSize) {
         // re-fetch last slice
         const lastSlice = slices.at(-1)!;
 
         const rankedNotes = ranker(lastSlice.notes);
 
-        // replace notes of last slice with top 6 notes
-        lastSlice.notes = rankedNotes.slice(0, 6);
+        // replace notes of last slice with top notes within limit
+        lastSlice.notes = rankedNotes.slice(0, maxActivePQSize);
       }
     }
   }
