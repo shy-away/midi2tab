@@ -17,11 +17,22 @@ const defaultFormValues = {
 
 const presetsData: {
   name: string;
-  customOptions?: { [key: string]: string };
+  fileName?: string;
+  customOptions?: Partial<Record<keyof typeof defaultFormValues, string>>;
 }[] = [
   {
     name: "Ode to Joy",
     customOptions: { "max-fret": "12" },
+  },
+  {
+    name: "Ode to Joy (Easy)",
+    fileName: "Ode to Joy",
+    customOptions: {
+      tuning: "d_drop",
+      "max-fret": "5",
+      "max-notes-at-once": "3",
+      "auto-transpose": "true",
+    },
   },
   {
     name: "Autumn Leaves",
@@ -39,7 +50,7 @@ export default function Presets({
       <div className="flex gap-3">
         {presetsData.map((preset) => {
           const handlePresetClick = async () => {
-            const fileName = `${preset.name}.mid`;
+            const fileName = `${preset.fileName ? preset.fileName : preset.name}.mid`;
 
             const res = await fetch(`/midi/${fileName}`);
             const blob = await res.blob();
