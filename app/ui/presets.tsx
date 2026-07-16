@@ -25,6 +25,16 @@ const presetsData: {
     customOptions: { "max-fret": "12" },
   },
   {
+    name: "Ode to Joy (Easy)",
+    fileName: "Ode to Joy",
+    customOptions: {
+      tuning: "d_drop",
+      "max-fret": "5",
+      "max-notes-at-once": "3",
+      "auto-transpose": "true",
+    },
+  },
+  {
     name: "Autumn Leaves",
   },
 ];
