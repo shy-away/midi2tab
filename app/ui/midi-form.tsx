@@ -34,8 +34,10 @@ export type MidiFormState = {
   customTimeSigTop: number;
   customTimeSigBottom: number;
   transpose: number;
-  autoTranspose: "true" | "false";
+  autoTranspose: AutoTransposeOptions;
 };
+
+type AutoTransposeOptions = "true" | "false";
 
 export const initialMidiFormState = {
   tuning: "e_standard",
@@ -50,7 +52,7 @@ export const initialMidiFormState = {
   customTimeSigTop: 4,
   customTimeSigBottom: 4,
   transpose: 0,
-  autoTranspose: "false" as "true" | "false",
+  autoTranspose: "false" as AutoTransposeOptions,
 };
 
 export default function MidiInput({
