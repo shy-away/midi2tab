@@ -2,13 +2,18 @@
 
 import { convertMidiToTab, State } from "@/app/lib/actions";
 import styles from "@/app/styles/barberpole-bg.module.scss";
-import MidiInput from "@/app/ui/midi-form";
+import MidiInput, {
+  initialMidiFormState,
+  MidiFormState,
+} from "@/app/ui/midi-form";
 import Presets from "@/app/ui/presets";
 import { Button } from "@/components/ui/button";
 import { AlphaTabApi } from "@coderline/alphatab";
 import { useActionState, useEffect, useRef, useState } from "react";
 
 export default function Home() {
+  const [midiFormState, setMidiFormState] =
+    useState<MidiFormState>(initialMidiFormState);
   const [showOutput, setShowOutput] = useState(false);
   const texRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,7 +53,11 @@ export default function Home() {
       {!showOutput ? (
         <>
           <HomepageSection>
-            <MidiInput action={formAction} />
+            <MidiInput
+              action={formAction}
+              formState={midiFormState}
+              setFormState={setMidiFormState}
+            />
           </HomepageSection>
           <HomepageSection>
             <Presets action={formAction} />

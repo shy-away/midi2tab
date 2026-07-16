@@ -20,37 +20,95 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useState } from "react";
+
+export type MidiFormState = {
+  tuning: string;
+  capoFret: number;
+  maxFret: number;
+  minFret: number;
+  handSpan: number;
+  maxNotesAtOnce: number;
+  selectedTimeSig: string;
+  timeSigTop: number;
+  timeSigBottom: number;
+  customTimeSigTop: number;
+  customTimeSigBottom: number;
+  transpose: number;
+  autoTranspose: AutoTransposeOptions;
+};
+
+type AutoTransposeOptions = "true" | "false";
+
+export const initialMidiFormState = {
+  tuning: "e_standard",
+  capoFret: 0,
+  maxFret: 15,
+  minFret: 0,
+  handSpan: 4,
+  maxNotesAtOnce: 6,
+  selectedTimeSig: "4/4",
+  timeSigTop: 4,
+  timeSigBottom: 4,
+  customTimeSigTop: 4,
+  customTimeSigBottom: 4,
+  transpose: 0,
+  autoTranspose: "false" as AutoTransposeOptions,
+};
 
 export default function MidiInput({
   action,
+  formState,
+  setFormState,
 }: {
   action: (payload: FormData) => void;
+  formState: MidiFormState;
+  setFormState: React.Dispatch<React.SetStateAction<MidiFormState>>;
 }) {
-  const [tuning, setTuning] = useState("e_standard");
-  const [capoFret, setCapoFret] = useState<number>(0);
-  const [maxFret, setMaxFret] = useState<number>(15);
-  const [minFret, setMinFret] = useState<number>(0);
-  const [handSpan, setHandSpan] = useState<number>(4);
-  const [maxNotesAtOnce, setMaxNotesAtOnce] = useState<number>(6);
-  const [selectedTimeSig, setSelectedTimeSig] = useState("4/4");
-  const [timeSigTop, setTimeSigTop] = useState<number>(4);
-  const [timeSigBottom, setTimeSigBottom] = useState<number>(4);
-  const [customTimeSigTop, setCustomTimeSigTop] = useState<number>(4);
-  const [customTimeSigBottom, setCustomTimeSigBottom] = useState<number>(4);
-  const [transpose, setTranspose] = useState<number>(0);
-  const [autoTranspose, setAutoTranspose] = useState<"true" | "false">("false");
+  function updateFormState<K extends keyof MidiFormState>(
+    key: K,
+    value: MidiFormState[K],
+  ) {
+    setFormState((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function formStateUpdaterFactory<K extends keyof MidiFormState>(key: K) {
+    return (value: MidiFormState[K]) => updateFormState(key, value);
+  }
+
+  const {
+    tuning,
+    capoFret,
+    maxFret,
+    minFret,
+    handSpan,
+    maxNotesAtOnce,
+    selectedTimeSig,
+    timeSigTop,
+    timeSigBottom,
+    customTimeSigTop,
+    customTimeSigBottom,
+    transpose,
+    autoTranspose,
+  } = formState;
 
   function handleCustomTimeSigBottom(value: number) {
     const updateTimeSigBottomAndReturn = (x: number) => {
-      setTimeSigBottom(x);
+      updateFormState("timeSigBottom", x);
       return x;
     };
 
-    if (value === customTimeSigBottom - 1)
-      setCustomTimeSigBottom((prev) => updateTimeSigBottomAndReturn(prev / 2));
-    else
-      setCustomTimeSigBottom((prev) => updateTimeSigBottomAndReturn(prev * 2));
+    let newCustomTimeSigBottom: number;
+
+    if (value === customTimeSigBottom - 1) {
+      newCustomTimeSigBottom = customTimeSigBottom / 2;
+    } else {
+      newCustomTimeSigBottom = customTimeSigBottom * 2;
+    }
+
+    updateFormState(
+      "customTimeSigBottom",
+      updateTimeSigBottomAndReturn(newCustomTimeSigBottom),
+    );
   }
 
   return (
@@ -68,7 +126,7 @@ export default function MidiInput({
             <Select
               name="tuning"
               value={tuning}
-              onValueChange={setTuning}
+              onValueChange={formStateUpdaterFactory("tuning")}
               defaultValue="e_standard"
             >
               <SelectTrigger className="w-full">
@@ -94,7 +152,7 @@ export default function MidiInput({
               aria-labelledby="capo"
               name="capo"
               value={capoFret}
-              onChange={setCapoFret}
+              onChange={formStateUpdaterFactory("capoFret")}
               minValue={0}
               maxValue={maxFret}
             />
@@ -109,7 +167,7 @@ export default function MidiInput({
                 aria-labelledby="minFret"
                 name="min-fret"
                 value={minFret}
-                onChange={setMinFret}
+                onChange={formStateUpdaterFactory("minFret")}
                 minValue={capoFret}
                 maxValue={maxFret}
               />
@@ -123,7 +181,7 @@ export default function MidiInput({
                 aria-labelledby="maxFret"
                 name="max-fret"
                 value={maxFret}
-                onChange={setMaxFret}
+                onChange={formStateUpdaterFactory("maxFret")}
                 minValue={minFret}
                 maxValue={24}
               />
@@ -138,7 +196,7 @@ export default function MidiInput({
               aria-labelledby="handSpan"
               name="hand-span"
               value={handSpan}
-              onChange={setHandSpan}
+              onChange={formStateUpdaterFactory("handSpan")}
               minValue={1}
               maxValue={6}
             />
@@ -152,7 +210,7 @@ export default function MidiInput({
               aria-labelledby="maxNotesAtOnce"
               name="max-notes-at-once"
               value={maxNotesAtOnce}
-              onChange={setMaxNotesAtOnce}
+              onChange={formStateUpdaterFactory("maxNotesAtOnce")}
               minValue={1}
               maxValue={6}
             />
@@ -171,11 +229,12 @@ export default function MidiInput({
             value={selectedTimeSig}
             onValueChange={(value: string) => {
               if (!value) return;
-              setSelectedTimeSig(value);
+              updateFormState("selectedTimeSig", value);
+
               if (value !== "custom") {
                 const [top, bottom] = value.split("/").map(Number);
-                setTimeSigTop(top);
-                setTimeSigBottom(bottom);
+                updateFormState("timeSigTop", top);
+                updateFormState("timeSigBottom", bottom);
               }
             }}
           >
@@ -207,8 +266,8 @@ export default function MidiInput({
                     aria-label="Custom time signature top"
                     value={customTimeSigTop}
                     onChange={(value: number) => {
-                      setCustomTimeSigTop(value);
-                      setTimeSigTop(value);
+                      updateFormState("customTimeSigTop", value);
+                      updateFormState("timeSigTop", value);
                     }}
                     minValue={2}
                     maxValue={12}
@@ -235,7 +294,7 @@ export default function MidiInput({
               <InputWithPlusMinusButtons
                 aria-labelledby="transpose"
                 value={transpose}
-                onChange={setTranspose}
+                onChange={formStateUpdaterFactory("transpose")}
                 minValue={-12}
                 maxValue={12}
                 isDisabled={autoTranspose === "true"}
@@ -248,8 +307,9 @@ export default function MidiInput({
             <span id="auto-transpose">Auto-transpose?</span>
             <Switch
               aria-labelledby="auto-transpose"
-              onCheckedChange={() =>
-                setAutoTranspose((prev) => (prev === "true" ? "false" : "true"))
+              checked={autoTranspose === "true"}
+              onCheckedChange={(checked: boolean) =>
+                updateFormState("autoTranspose", checked ? "true" : "false")
               }
             />
             <input type="hidden" name="auto-transpose" value={autoTranspose} />
