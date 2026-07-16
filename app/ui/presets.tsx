@@ -8,6 +8,7 @@ const defaultFormValues = {
   "min-fret": "0",
   "max-fret": "15",
   "hand-span": "4",
+  "max-notes-at-once": "6",
   "time-sig-top": "4",
   "time-sig-bottom": "4",
   transpose: "0",

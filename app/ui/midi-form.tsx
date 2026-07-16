@@ -32,7 +32,7 @@ export default function MidiInput({
   const [maxFret, setMaxFret] = useState<number>(15);
   const [minFret, setMinFret] = useState<number>(0);
   const [handSpan, setHandSpan] = useState<number>(4);
-  // const [maxNotesPerChord, setMaxNotesPerChord] = useState<number>(6);
+  const [maxNotesAtOnce, setMaxNotesAtOnce] = useState<number>(6);
   const [selectedTimeSig, setSelectedTimeSig] = useState("4/4");
   const [timeSigTop, setTimeSigTop] = useState<number>(4);
   const [timeSigBottom, setTimeSigBottom] = useState<number>(4);
@@ -144,20 +144,20 @@ export default function MidiInput({
             />
           </div>
         </section>
-        {/* Max Notes Per Chord */}
-        {/* <section className="max-w-45">
-          <span id="maxNotesPerChord">Max Notes Per Chord</span>
+        {/* Max Notes At Once */}
+        <section className="max-w-45">
+          <span id="maxNotesAtOnce">Max Notes At Once</span>
           <div className="mt-2">
             <InputWithPlusMinusButtons
-              aria-labelledby="maxNotesPerChord"
-              name="max-notes-per-chord"
-              value={maxNotesPerChord}
-              onChange={setMaxNotesPerChord}
+              aria-labelledby="maxNotesAtOnce"
+              name="max-notes-at-once"
+              value={maxNotesAtOnce}
+              onChange={setMaxNotesAtOnce}
               minValue={1}
               maxValue={6}
             />
           </div>
-        </section> */}
+        </section>
         {/* Time signature */}
         <section className="flex flex-col">
           <div id="timeSig">Time signature</div>
