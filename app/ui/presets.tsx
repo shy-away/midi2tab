@@ -17,6 +17,7 @@ const defaultFormValues = {
 
 const presetsData: {
   name: string;
+  fileName?: string;
   customOptions?: { [key: string]: string };
 }[] = [
   {
@@ -39,7 +40,7 @@ export default function Presets({
       <div className="flex gap-3">
         {presetsData.map((preset) => {
           const handlePresetClick = async () => {
-            const fileName = `${preset.name}.mid`;
+            const fileName = `${preset.fileName ? preset.fileName : preset.name}.mid`;
 
             const res = await fetch(`/midi/${fileName}`);
             const blob = await res.blob();
