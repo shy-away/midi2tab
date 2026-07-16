@@ -18,7 +18,7 @@ const defaultFormValues = {
 const presetsData: {
   name: string;
   fileName?: string;
-  customOptions?: { [key: string]: string };
+  customOptions?: Partial<Record<keyof typeof defaultFormValues, string>>;
 }[] = [
   {
     name: "Ode to Joy",
