@@ -15,3 +15,11 @@ Additionally, this project wouldn't have been possible without:
 - [shadcn/studio](https://shadcnstudio.com/), for their "Input with plus/minus buttons" component (this project uses a modified version of their demo)
 - [datastructures-js](https://datastructures-js.info/) and [js-combinatorics](https://github.com/dankogai/js-combinatorics) for certain algorithmic functions
 - The many brilliant people behind every part of this app's tech stack: React, TypeScript, Next.js, shadcn/ui, Tailwind, Zod, Jest, and many more.
+
+# Development
+
+To run a local development server, use the `dev` script.
+
+```
+npm run dev
+```
