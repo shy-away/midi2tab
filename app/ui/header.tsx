@@ -26,22 +26,42 @@ export default function Header({
             <DialogTitle>Guide</DialogTitle>
           </DialogHeader>
           <div className="mx-4 max-h-[50vh] overflow-y-auto px-4">
-            {
-              // TODO: Remove placeholder
-            }
-            {Array(5)
-              .fill(0)
-              .map((_, index) => (
-                <p key={index} className="mb-4 leading-normal">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Praesentium magni nostrum ea qui. Praesentium sunt quis atque
-                  debitis quos adipisci facilis autem sit tenetur! Mollitia
-                  possimus eveniet dignissimos quo numquam? Alias sunt
-                  perspiciatis ex facilis veniam nemo eligendi nam, dolorum
-                  distinctio corporis? Vel ullam vero iure quos, mollitia atque
-                  omnis.
-                </p>
-              ))}
+            <p className="mb-2">
+              <span className="font-bold">Welcome!</span> This tool converts
+              MIDI files into guitar tablature.
+            </p>
+            <p className="mb-2">
+              You can upload your own MIDI, or try a preset.
+            </p>
+            <span className="font-bold">Quick start:</span>
+            <ul className="list-disc list-inside">
+              <li>Upload your MIDI file.</li>
+              <li>
+                Configure options.
+                <ul className="list-[circle] ml-6 mt-1">
+                  <li>
+                    Model your guitar with{" "}
+                    <span className="font-bold">Tuning and Capo</span>.
+                  </li>
+                  <li>
+                    Control the conversion with{" "}
+                    <span className="font-bold">
+                      Min Fret, Max Fret, Hand Span, and Max Notes At Once
+                    </span>
+                    .
+                  </li>
+                  <li>
+                    Set the time signature as desired. Use the manual{" "}
+                    <span className="font-bold">Transpose</span> option, or try
+                    the <span className="font-bold">Auto-transpose</span> option
+                    to let the algorithm adjust the pitch.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                Hit <span className="font-bold">Submit</span> to convert!
+              </li>
+            </ul>
           </div>
         </DialogContent>
       </Dialog>
