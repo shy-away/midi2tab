@@ -6,6 +6,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CircleQuestionMarkIcon } from "lucide-react";
+import styles from "@/app/styles/text-rainbow.module.scss";
 
 export default function Header({
   className,
@@ -27,8 +28,12 @@ export default function Header({
           </DialogHeader>
           <div className="mx-4 max-h-[50vh] overflow-y-auto px-4">
             <p className="mb-2">
-              <span className="font-bold">Welcome!</span> This tool converts
-              MIDI files into guitar tablature.
+              <span
+                className={`font-bold bg-clip-text text-transparent ${styles.bgRainbow}`}
+              >
+                Welcome!
+              </span>{" "}
+              This tool converts MIDI files into guitar tablature.
             </p>
             <p className="mb-2">
               You can upload your own MIDI, or try a preset.
