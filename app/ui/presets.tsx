@@ -46,8 +46,8 @@ export default function Presets({
 }) {
   return (
     <div className="text-center">
-      <h2 className="text-xl">Presets</h2>
-      <div className="flex gap-3">
+      <h2 className="text-xl mb-2">Presets</h2>
+      <div className="flex gap-3 flex-wrap justify-center">
         {presetsData.map((preset) => {
           const handlePresetClick = async () => {
             const fileName = `${preset.fileName ? preset.fileName : preset.name}.mid`;
