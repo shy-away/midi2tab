@@ -1,4 +1,4 @@
-# Midi2tab
+# Midi2Tab
 
 Generate guitar tablature from MIDI.
 
