@@ -33,7 +33,8 @@ export default function Header({
               >
                 Welcome!
               </span>{" "}
-              Midi2Tab is a standalone tool that converts MIDI files into guitar tablature.
+              Midi2Tab is a standalone tool that converts MIDI files into guitar
+              tablature.
             </p>
             <p className="mb-2">
               You can upload your own MIDI, or try a preset.
