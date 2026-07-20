@@ -46,7 +46,7 @@ export default function Presets({
 }) {
   return (
     <div className="text-center">
-      <h2 className="text-xl">Presets</h2>
+      <h2 className="text-xl mb-2">Presets</h2>
       <div className="flex gap-3">
         {presetsData.map((preset) => {
           const handlePresetClick = async () => {
